@@ -1,0 +1,97 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+
+@layer base {
+  :root {
+    /* Light Mode (Clean Slate) */
+    --color-background: 241 245 249;
+    /* Slate 100 */
+    --color-surface: 248 250 252;
+    /* Slate 50 (Off-white) */
+    --color-surface-light: 226 232 240;
+    /* Slate 200 */
+    --color-primary: 0 160 70;
+    /* Darker Green for white bg */
+    --color-secondary: 226 232 240;
+    /* Slate 200 */
+    --color-accent: 255 87 34;
+    /* Deep Orange */
+    --color-text-primary: 15 23 42;
+    /* Slate 900 */
+    --color-text-secondary: 71 85 105;
+    /* Slate 600 */
+    --color-text-muted: 148 163 184;
+    /* Slate 400 */
+    --color-border: 203 213 225;
+    /* Slate 300 - Visible border */
+  }
+
+  .dark {
+    /* Dark Mode (HabitForge) */
+    --color-background: 2 6 23;
+    /* Slate 950 */
+    --color-surface: 15 23 42;
+    /* Slate 900 */
+    --color-surface-light: 30 41 59;
+    /* Slate 800 */
+    --color-primary: 0 230 118;
+    /* Vibrant Green */
+    --color-secondary: 30 41 59;
+    /* Slate 800 */
+    --color-accent: 255 61 0;
+    /* Forge Orange */
+    --color-text-primary: 248 250 252;
+    /* Slate 50 */
+    --color-text-secondary: 148 163 184;
+    /* Slate 400 */
+    --color-text-muted: 100 116 139;
+    /* Slate 500 */
+    --color-border: 255 255 255;
+    /* Default white for opacity usage */
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-text-primary selection:bg-primary/30 selection:text-primary transition-colors duration-300;
+  }
+
+  /* Reset button cursor */
+  button {
+    cursor: pointer;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-surface/40 backdrop-blur-xl border border-border/50 dark:border-white/5 shadow-xl;
+  }
+
+  .glass-card {
+    @apply bg-surfaceLight/30 backdrop-blur-lg border border-border/50 dark:border-white/5 hover:border-primary/20 dark:hover:border-white/10 transition-all duration-300;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(0, 230, 118, 0.4);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-surfaceLight rounded-full border-2 border-background;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-700;
+}
