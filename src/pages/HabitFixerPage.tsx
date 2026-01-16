@@ -86,7 +86,7 @@ export const HabitFixerPage = () => {
     if (!habit) return null;
 
     return (
-        <div className="max-w-xl mx-auto py-8 px-4">
+        <div className="max-w-xl mx-auto py-8">
             <Button variant="ghost" className="mb-6 pl-0 text-text-muted hover:text-text-primary hover:bg-transparent -ml-2" onClick={() => navigate('/dashboard')}>
                 <ArrowLeft className="mr-2" size={20} /> Back to Dashboard
             </Button>
@@ -113,7 +113,7 @@ export const HabitFixerPage = () => {
 
                 <div className="space-y-6 relative z-10">
                     <div className={clsx(
-                        "flex items-center justify-between p-5 rounded-xl border transition-all duration-300",
+                        "flex items-center justify-between rounded-xl border transition-all duration-300",
                         windowState === 'open'
                             ? "bg-success/5 border-success/30 text-success shadow-[0_0_20px_rgba(0,230,118,0.05)]"
                             : "bg-surface/30 border-white/5 text-text-muted"
@@ -127,7 +127,7 @@ export const HabitFixerPage = () => {
                         </div>
                         <div className="text-right">
                             <p className={clsx(
-                                "font-black font-mono text-xl tracking-widest",
+                                "font-black font-mono text-l tracking-widest",
                                 windowState === 'open' ? "text-success text-glow" : "text-text-muted"
                             )}>
                                 {windowState === 'open' ? 'ACTIVE' : 'LOCKED'}
@@ -167,7 +167,7 @@ export const HabitFixerPage = () => {
                             )}
                         </Button>
                     ) : (
-                        <div className="flex items-center gap-3 text-text-muted text-sm justify-center p-6 bg-surface/30 rounded-xl border border-white/5 border-dashed">
+                        <div className="flex items-center gap-3 text-text-muted text-sm justify-center bg-surface/30 rounded-xl border border-white/5 border-dashed">
                             <AlertTriangle size={18} />
                             <span>Verification protocol is currently locked.</span>
                         </div>

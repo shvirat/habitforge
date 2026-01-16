@@ -6,7 +6,7 @@ import type { Habit } from '@/types';
 import { Button } from '@/components/Button';
 import { CreateHabitModal } from '@/components/CreateHabitModal';
 import { clsx } from 'clsx';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -57,7 +57,7 @@ export const Dashboard = () => {
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <div className="bg-surface/60 backdrop-blur-md border border-white/10 px-6 py-3 rounded-xl flex items-center gap-4 shadow-lg active:scale-95 transition-transform hover:border-yellow-500/30 group cursor-default">
+                    <Link to="/levels" className="bg-surface/60 backdrop-blur-md border border-white/10 px-6 py-3 rounded-xl flex items-center gap-4 shadow-lg active:scale-95 transition-transform hover:border-yellow-500/30 group cursor-default">
                         <div className="p-2 bg-yellow-500/10 rounded-lg group-hover:bg-yellow-500/20 transition-colors">
                             <Trophy size={20} className="text-yellow-500" />
                         </div>
@@ -65,7 +65,7 @@ export const Dashboard = () => {
                             <span className="font-bold text-2xl leading-none text-text-primary tracking-tight">{xp}</span>
                             <span className="text-[10px] text-text-muted uppercase tracking-widest font-bold">Experience</span>
                         </div>
-                    </div>
+                    </Link>
                     <Button onClick={() => setIsModalOpen(true)} className="hidden md:flex shadow-lg shadow-primary/20">
                         <Plus size={20} className="mr-2" />
                         New Habit

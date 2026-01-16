@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Background -->
+  <rect
+    x="4"
+    y="4"
+    width="120"
+    height="120"
+    rx="24"
+    fill="#0F172A"
+  />
+
+  <!-- Icon group: smaller + vertically balanced -->
+  <g transform="translate(64 60) scale(0.86) translate(-64 -64)">
+    <!-- Shield -->
+    <path
+      d="M64 20
+         L100 36
+         V66
+         C100 90 80 106 64 116
+         C48 106 28 90 28 66
+         V36
+         L64 20Z"
+      fill="#00E676"
+    />
+
+    <!-- Check -->
+    <path
+      d="M50 66
+         L60 76
+         L82 52"
+      stroke="#0F172A"
+      stroke-width="10"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"
+    />
+  </g>
+</svg>

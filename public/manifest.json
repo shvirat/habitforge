@@ -1,11 +1,10 @@
 {
-  "name": "HabitForge - Forging your discipline, one day at a time.",
+  "name": "HabitForge - Forging your discipline.",
   "short_name": "HabitForge",
   "description": "Build discipline with proof-based habits, streaks, and accountability.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "orientation": "any",
   "background_color": "#0F172A",
   "theme_color": "#00E676",
   "categories": ["productivity", "health", "lifestyle"],
