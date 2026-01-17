@@ -87,7 +87,7 @@ export const Login = () => {
 
             <div className="relative z-10 w-full max-w-md glass-panel p-8 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-scale-up border border-white/10">
                 <div className="text-center mb-10">
-                    <h1 className="text-4xl font-black bg-gradient-to-r from-text-primary via-primary to-text-primary bg-clip-text text-transparent mb-3 tracking-tight drop-shadow-sm">
+                    <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-text-primary via-primary to-text-primary bg-clip-text text-transparent mb-3 tracking-tight drop-shadow-sm">
                         HabitForge
                     </h1>
                     <p className="text-text-secondary font-medium">

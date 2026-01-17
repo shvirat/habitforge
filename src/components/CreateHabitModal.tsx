@@ -50,8 +50,8 @@ export const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ isOpen, onCl
     };
 
     return createPortal(
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 dark:bg-black/50 animate-fade-in">
-            <div className="w-full max-w-lg bg-surface border border-secondary rounded-2xl p-6 shadow-2xl animate-scale-up relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 dark:bg-black/50 animate-fade-in backdrop-blur-sm">
+            <div className="w-full max-w-lg bg-surface border border-secondary rounded-2xl p-6 shadow-2xl animate-scale-up relative max-h-[90vh] overflow-y-auto custom-scrollbar">
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-text-secondary hover:text-text-primary transition-colors"

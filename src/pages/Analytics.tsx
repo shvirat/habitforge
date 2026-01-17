@@ -92,7 +92,7 @@ export const Analytics = () => {
         <div className="space-y-8 pb-20 max-w-6xl mx-auto">
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Performance Analytics</h1>
+                    <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Performance Analytics</h1>
                     <p className="text-text-secondary flex items-center gap-2">
                         <BarChart2 size={16} className="text-accent" />
                         Visualize your discipline metrics.

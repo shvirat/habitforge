@@ -102,7 +102,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <ThemeToggle className="bg-surface/50 backdrop-blur-md shadow-lg border border-white/10" />
                 </div>
 
-                <div className="max-w-6xl mx-auto animate-fade-in pb-28 md:pb-0">
+                <div className="max-w-6xl mx-auto animate-fade-in pb-32 md:pb-8 safe-area-bottom">
                     {children}
                 </div>
             </main>

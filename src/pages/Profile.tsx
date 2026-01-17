@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Link} from 'react-router-dom'
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
@@ -20,14 +20,14 @@ export const Profile = () => {
     const [habits, setHabits] = React.useState<any[]>([]);
 
     React.useEffect(() => {
-            if (!user) return;
-            const unsub = onSnapshot(doc(db, 'users', user.uid), (doc) => {
-                if (doc.exists()) {
-                    setXp(doc.data().xp || 0);
-                }
-            });
-            return () => unsub();
-        }, [user]);
+        if (!user) return;
+        const unsub = onSnapshot(doc(db, 'users', user.uid), (doc) => {
+            if (doc.exists()) {
+                setXp(doc.data().xp || 0);
+            }
+        });
+        return () => unsub();
+    }, [user]);
 
     React.useEffect(() => {
         if (user) {
@@ -77,7 +77,7 @@ export const Profile = () => {
         <div className="space-y-8 pb-20 max-w-4xl mx-auto">
             <header className="flex justify-between items-end border-b border-white/10 pb-6">
                 <div>
-                    <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Operative Profile</h1>
+                    <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Operative Profile</h1>
                     <p className="text-text-secondary flex items-center gap-2">
                         <Shield size={16} className="text-primary" />
                         Manage your identity and protocols.
@@ -111,11 +111,11 @@ export const Profile = () => {
                         <p className="text-xs text-text-muted font-mono bg-surface/50 py-1 px-3 rounded-full inline-block border border-white/5">
                             ID: {user?.uid.slice(0, 8)}...
                         </p>
-                    <div className="mt-4 mb-4 px-2">
-                    <Link to="/levels" className="block transform hover:scale-[1.02] transition-transform duration-300">
-                        <LevelBadge xp={xp} />
-                    </Link>
-                    </div>
+                        <div className="mt-4 mb-4 px-2">
+                            <Link to="/levels" className="block transform hover:scale-[1.02] transition-transform duration-300">
+                                <LevelBadge xp={xp} />
+                            </Link>
+                        </div>
                     </div>
                 </div>
 
@@ -123,16 +123,16 @@ export const Profile = () => {
                 <div className="md:col-span-2 space-y-8">
                     <div className="glass-card p-6 rounded-2xl">
                         <div className='flex flex-col justify-between md:flex-row md:items-center md:justify-between'>
-                        <h3 className="text-lg font-bold text-text-primary mb-6 flex items-center gap-2">
-                            <User size={20} className="text-accent" />
-                            Personal Details
-                        </h3>
-                        {!isEditing && (
-                    <Button onClick={() => setIsEditing(true)} variant="outline" size="sm" className='mb-6'>
-                        <Edit2 size={16} className="mr-2" />
-                        Edit Profile
-                    </Button>
-                        )}
+                            <h3 className="text-lg font-bold text-text-primary mb-6 flex items-center gap-2">
+                                <User size={20} className="text-accent" />
+                                Personal Details
+                            </h3>
+                            {!isEditing && (
+                                <Button onClick={() => setIsEditing(true)} variant="outline" size="sm" className='mb-6'>
+                                    <Edit2 size={16} className="mr-2" />
+                                    Edit Profile
+                                </Button>
+                            )}
                         </div>
 
                         {isEditing ? (

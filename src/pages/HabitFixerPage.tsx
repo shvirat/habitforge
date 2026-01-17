@@ -100,7 +100,7 @@ export const HabitFixerPage = () => {
                         <ShieldCheck className="text-accent" size={32} />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black text-text-primary tracking-tight">Verification Protocol</h1>
+                        <h1 className="text-2xl md:text-3xl font-black text-text-primary tracking-tight">Verification Protocol</h1>
                         <p className="text-text-secondary text-sm font-medium">Verify your discipline with photographic evidence.</p>
                     </div>
                 </div>
@@ -144,13 +144,13 @@ export const HabitFixerPage = () => {
                             </div>
                             <h3 className="text-2xl font-black text-text-primary mb-2 tracking-tight">Protocol Verified</h3>
                             <p className="text-text-secondary mb-8 max-w-xs mx-auto">You have successfully proved your discipline for today. The forge grows stronger.</p>
-                            <Button className="min-w-[200px]" variant="outline" onClick={() => navigate('/dashboard')}>
+                            <Button className="min-w-[200px] text-sm sm:text-base px-3 py-2 sm:px-4 sm:py-2.5" variant="outline" onClick={() => navigate('/dashboard')}>
                                 Return to Dashboard
                             </Button>
                         </div>
                     ) : windowState === 'open' ? (
                         <Button
-                            className="w-full h-20 text-xl font-bold bg-accent hover:bg-accent/90 shadow-[0_0_30px_rgba(255,61,0,0.3)] hover:shadow-[0_0_50px_rgba(255,61,0,0.5)] border border-accent/50 transition-all duration-300 group"
+                            className="w-full h-14 text-l font-bold bg-accent hover:bg-accent/90 shadow-[0_0_30px_rgba(255,61,0,0.3)] hover:shadow-[0_0_50px_rgba(255,61,0,0.5)] border border-accent/50 transition-all duration-300 group  rounded-xl"
                             onClick={() => setShowCamera(true)}
                             disabled={uploading}
                         >

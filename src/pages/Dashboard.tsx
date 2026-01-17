@@ -5,6 +5,7 @@ import { HabitService } from '@/features/habits/HabitService';
 import type { Habit } from '@/types';
 import { Button } from '@/components/Button';
 import { CreateHabitModal } from '@/components/CreateHabitModal';
+import { SkeletonCard } from '@/components/SkeletonCard';
 import { clsx } from 'clsx';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -18,6 +19,7 @@ export const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [xp, setXp] = useState(0);
     const navigate = useNavigate();
+    const actionBase = "h-10 px-4 text-sm flex items-center justify-center gap-2 rounded-xl";
 
     const loadHabits = async () => {
         if (!user) return;
@@ -50,23 +52,23 @@ export const Dashboard = () => {
         <div className="space-y-8">
             <header className="flex flex-col md:flex-row gap-6 md:items-end justify-between relative z-10">
                 <div>
-                    <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Dashboard</h1>
+                    <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Dashboard</h1>
                     <p className="text-text-secondary font-medium flex items-center gap-2">
                         <Zap size={16} className="text-accent" />
                         Forging your discipline, one day at a time.
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <Link to="/levels" className="bg-surface/60 backdrop-blur-md border border-white/10 px-6 py-3 rounded-xl flex items-center gap-4 shadow-lg active:scale-95 transition-transform hover:border-yellow-500/30 group cursor-default">
+                    <Link to="/levels" className="bg-surface/60 backdrop-blur-md border border-white/10 px-6 py-2 rounded-xl flex items-center gap-4 shadow-lg active:scale-95 transition-transform hover:border-yellow-500/30 group cursor-default">
                         <div className="p-2 bg-yellow-500/10 rounded-lg group-hover:bg-yellow-500/20 transition-colors">
                             <Trophy size={20} className="text-yellow-500" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="font-bold text-2xl leading-none text-text-primary tracking-tight">{xp}</span>
+                            <span className="font-bold text-xl leading-none text-text-primary tracking-tight">{xp}</span>
                             <span className="text-[10px] text-text-muted uppercase tracking-widest font-bold">Experience</span>
                         </div>
                     </Link>
-                    <Button onClick={() => setIsModalOpen(true)} className="hidden md:flex shadow-lg shadow-primary/20">
+                    <Button onClick={() => setIsModalOpen(true)} className="hidden md:flex shadow-lg shadow-primary/20 px-4 py-[25px] rounded-x text-[18px]">
                         <Plus size={20} className="mr-2" />
                         New Habit
                     </Button>
@@ -74,9 +76,10 @@ export const Dashboard = () => {
             </header>
 
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-20 gap-4">
-                    <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-                    <p className="text-text-muted font-medium animate-pulse">Synchronizing Forge...</p>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pb-8">
+                    {[...Array(6)].map((_, i) => (
+                        <SkeletonCard key={i} />
+                    ))}
                 </div>
             ) : habits.length === 0 ? (
                 <div className="text-center py-24 bg-surface/30 backdrop-blur-sm rounded-3xl border border-white/5 border-dashed relative overflow-hidden group">
@@ -99,7 +102,7 @@ export const Dashboard = () => {
 
                             <div className="flex justify-between items-start mb-6 relative z-10">
                                 <div>
-                                    <h3 className="font-bold text-xl text-text-primary mb-1 tracking-tight group-hover:text-primary transition-colors">{habit.title}</h3>
+                                    <h3 className="font-bold text-lg md:text-xl text-text-primary mb-1 tracking-tight group-hover:text-primary transition-colors">{habit.title}</h3>
                                     <span className={clsx(
                                         "text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border",
                                         (() => {
@@ -126,7 +129,7 @@ export const Dashboard = () => {
                                 <div className="text-right flex flex-col items-end">
                                     <div className="flex items-center gap-1.5 text-orange-500">
                                         <Flame size={20} className={clsx("fill-orange-500", habit.streak > 0 && "animate-pulse")} />
-                                        <span className="text-2xl font-black font-mono leading-none">{habit.streak}</span>
+                                        <span className="text-xl md:text-2xl font-black font-mono leading-none">{habit.streak}</span>
                                     </div>
                                     <p className="text-[10px] text-text-muted uppercase tracking-wider font-bold mt-1">Day Streak</p>
                                 </div>
@@ -138,50 +141,40 @@ export const Dashboard = () => {
 
                             <div className="flex items-center gap-3 mt-auto relative z-10">
                                 {habit.lastCompleted && new Date(habit.lastCompleted).toDateString() === new Date().toDateString() ? (
-                                    <div className="w-full py-2.5 bg-success/10 text-success rounded-xl text-center text-sm font-bold border border-success/20 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(0,230,118,0.1)]">
+                                    <div
+                                        className={`w-full ${actionBase} bg-success/10 text-success font-bold border border-success/20 shadow-[0_0_15px_rgba(0,230,118,0.1)]`}>
                                         <Check size={16} strokeWidth={3} />
                                         Completed
                                     </div>
                                 ) : habit.isHabitFixer ? (
                                     <Button
-                                        variant="accent"
-                                        className="w-full"
-                                        size="sm"
-                                        onClick={() => navigate(`/fixer/${habit.id}`)}
+                                    variant="accent"
+                                    className={`w-full ${actionBase}`}
+                                    onClick={() => navigate(`/fixer/${habit.id}`)}
                                     >
-                                        <Camera size={16} className="mr-2" />
-                                        Verify Proof
+                                    <Camera size={16} />
+                                    Verify Proof
                                     </Button>
                                 ) : (
                                     <>
                                         <button
-                                            className="p-2.5 rounded-lg text-text-muted hover:text-error hover:bg-error/10 border border-transparent hover:border-error/20 transition-all active:scale-95"
-                                            onClick={async () => {
-                                                if (!user) return;
-                                                if (window.confirm("Mark as failed? This will reset your streak and deduct XP.")) {
-                                                    try {
-                                                        await HabitService.failHabit(user.uid, habit.id);
-                                                        loadHabits();
-                                                    } catch (e) { console.error(e); }
-                                                }
-                                            }}
-                                            title="Fail Day"
+                                        className={`h-10 w-10 flex items-center justify-center rounded-lg
+                                                    text-text-muted border border-1/20
+                                                    hover:text-error hover:bg-error/10 hover:border-error/20
+                                                    transition-all active:scale-95`}
                                         >
-                                            <X size={20} />
+                                        <X size={18} />
                                         </button>
                                         <Button
-                                            className="flex-1"
-                                            size="sm"
-                                            onClick={async () => {
-                                                if (!user) return;
-                                                try {
-                                                    await HabitService.completeHabit(user.uid, habit.id);
-                                                    loadHabits(); // Refresh UI
-                                                } catch (e) { console.error(e); }
-                                            }}
+                                        className={`flex-1 ${actionBase}`}
+                                        onClick={async () => {
+                                            if (!user) return;
+                                            await HabitService.completeHabit(user.uid, habit.id);
+                                            loadHabits();
+                                        }}
                                         >
-                                            <Check size={18} className="mr-2" strokeWidth={3} />
-                                            Complete
+                                        <Check size={16} strokeWidth={3} />
+                                        Complete
                                         </Button>
                                     </>
                                 )}

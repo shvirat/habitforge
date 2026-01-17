@@ -31,14 +31,14 @@ export const LevelDetails = () => {
                 <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 shadow-xl shadow-orange-500/20 mb-4 animate-bounce-slow">
                     <Trophy className="text-white w-12 h-12" />
                 </div>
-                <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-600">
+                <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-600">
                     Level {stats.level}
                 </h1>
-                <p className="text-text-secondary text-lg">Master of Consistency</p>
+                <p className="text-text-secondary text-base md:text-lg">Master of Consistency</p>
             </header>
 
             {/* Progress Card */}
-            <div className="bg-surface border border-secondary rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+            <div className="bg-surface border border-secondary rounded-2xl p-5 md:p-8 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
                 <div className="flex justify-between items-end mb-4 relative z-10">
