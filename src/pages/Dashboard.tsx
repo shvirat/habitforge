@@ -180,7 +180,7 @@ export const Dashboard = () => {
                                     if (isCompleted) {
                                         return (
                                             <div
-                                                className={`w-full ${actionBase} bg-success/10 text-success font-bold border border-success/20 shadow-[0_0_15px_rgba(0,230,118,0.1)]`}>
+                                                className={`w-full ${actionBase} bg-success/10 text-green-500 font-bold border border-success/20 shadow-[0_0_15px_rgba(0,230,118,0.1)]`}>
                                                 <Check size={16} strokeWidth={3} />
                                                 {habit.frequency === 'weekly' ? 'Week Complete' : 'Completed'}
                                             </div>

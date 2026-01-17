@@ -9,6 +9,7 @@ import { Profile } from '@/pages/Profile';
 import { HabitFixerLanding } from '@/pages/HabitFixerLanding';
 import { LevelDetails } from '@/pages/LevelDetails';
 import { Layout } from '@/components/Layout';
+import { NotificationManager } from '@/components/NotificationManager';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -23,6 +24,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
+        <NotificationManager />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={
