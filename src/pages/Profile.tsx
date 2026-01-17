@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext';
+import { useNotification } from '@/context/NotificationContext';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { LevelBadge } from '@/components/LevelBadge';
-import { User, Save, X, Edit2, Shield, Trash2, ShieldCheckIcon } from 'lucide-react';
+import { User, Save, X, Edit2, Shield, Trash2, ShieldCheckIcon, Bell } from 'lucide-react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 export const Profile = () => {
     const { user } = useAuth();
+    const { permission, requestPermission } = useNotification();
     const [xp, setXp] = useState(0);
     const [isEditing, setIsEditing] = React.useState(false);
     const [formData, setFormData] = React.useState({
@@ -87,9 +89,9 @@ export const Profile = () => {
                 </div>
             </header>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 min-[1080px]:grid-cols-3 gap-8">
                 {/* Identity Card */}
-                <div className="md:col-span-1">
+                <div className="min-[1080px]:col-span-1">
                     <div className="glass-panel p-6 rounded-2xl text-center relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-primary/20 transition-all" />
 
@@ -122,7 +124,7 @@ export const Profile = () => {
                 </div>
 
                 {/* Edit Details */}
-                <div className="md:col-span-2 space-y-8">
+                <div className="min-[1080px]:col-span-2 space-y-8">
                     <div className="glass-card p-6 rounded-2xl">
                         <div className='flex flex-col justify-between md:flex-row md:items-center md:justify-between'>
                             <h3 className="text-lg font-bold text-text-primary mb-6 flex items-center gap-2">
@@ -174,6 +176,28 @@ export const Profile = () => {
                                 </div>
                             </div>
                         )}
+                    </div>
+
+
+                    {/* Notification Settings */}
+                    <div className="glass-card p-6 rounded-2xl">
+                        <h3 className="text-lg font-bold text-text-primary mb-6 flex items-center gap-2">
+                            <Bell size={20} className="text-accent" />
+                            Notification Protocols
+                        </h3>
+                        <div className="flex items-center justify-between p-4 bg-surface/40 border border-white/5 rounded-xl">
+                            <div>
+                                <p className="font-bold text-text-primary">Push Notifications</p>
+                                <p className="text-sm text-text-muted">Receive updates about your protocols.</p>
+                            </div>
+                            {permission === 'granted' ? (
+                                <span className="text-success font-bold text-sm bg-success/10 px-3 py-1 rounded-full border border-success/20">Active</span>
+                            ) : (
+                                <Button onClick={requestPermission} size="sm">
+                                    Enable
+                                </Button>
+                            )}
+                        </div>
                     </div>
 
                     {/* Active Habits Section */}

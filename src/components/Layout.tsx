@@ -35,7 +35,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     ];
 
     return (
-        <div className="min-h-screen bg-background text-text-primary flex relative overflow-hidden">
+        <div className="h-screen bg-background text-text-primary flex relative overflow-hidden">
             {/* Background Effects */}
             <div className="fixed inset-0 z-0 pointer-events-none">
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] opacity-20" />
@@ -43,7 +43,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
 
             {/* Sidebar - Desktop */}
-            <aside className="hidden md:flex w-72 flex-col border-r border-white/5 bg-surface/30 backdrop-blur-xl p-6 fixed h-full z-20 shadow-2xl">
+            <aside className="hidden min-[900px]:flex w-72 flex-col border-r border-white/5 bg-surface/30 backdrop-blur-xl p-6 z-20 shadow-2xl shrink-0">
                 <div className="flex items-center gap-4 mb-10 px-2">
                     <div className="relative group">
                         <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full group-hover:bg-primary/40 transition-all duration-500" />
@@ -96,9 +96,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-72 p-4 md:p-8 overflow-y-auto w-full relative z-10">
+            <main className="flex-1 p-4 md:p-8 overflow-y-auto w-full relative z-10">
                 {/* Mobile Header Elements */}
-                <div className="md:hidden fixed top-4 right-4 z-50">
+                <div className="min-[900px]:hidden fixed top-4 right-4 z-50">
                     <ThemeToggle className="bg-surface/50 backdrop-blur-md shadow-lg border border-white/10" />
                 </div>
 
@@ -108,7 +108,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             </main>
 
             {/* Mobile Navbar (Floating Island) */}
-            <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-surface/80 backdrop-blur-2xl border border-white/10 rounded-full p-2 flex justify-between items-center shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] z-50 ring-1 ring-white/5">
+            <nav className="min-[900px]:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-surface/80 backdrop-blur-2xl border border-white/10 rounded-full p-2 flex justify-between items-center shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] z-50 ring-1 ring-white/5">
                 {navItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = location.pathname === item.path;

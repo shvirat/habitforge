@@ -86,7 +86,7 @@ export const Dashboard = () => {
                             <span className="text-[10px] text-text-muted uppercase tracking-widest font-bold">Experience</span>
                         </div>
                     </Link>
-                    <Button onClick={() => setIsModalOpen(true)} className="hidden md:flex shadow-lg shadow-primary/20 px-4 py-[25px] rounded-x text-[18px]">
+                    <Button onClick={() => setIsModalOpen(true)} className="hidden md:flex shadow-lg shadow-primary/20 px-2 py-[25px] rounded-x w-[150px]">
                         <Plus size={20} className="mr-2" />
                         New Habit
                     </Button>

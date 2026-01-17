@@ -101,7 +101,7 @@ export const Analytics = () => {
             </header>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 min-[1080px]:grid-cols-3 gap-6">
                 <div className="glass-card p-6 rounded-2xl relative overflow-hidden group">
                     {/* Background Glow */}
                     <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-primary/20 rounded-full blur-[40px] group-hover:bg-primary/30 transition-all" />
@@ -115,7 +115,7 @@ export const Analytics = () => {
                 </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 min-[1080px]:grid-cols-2 gap-8">
                 {/* Weekly Consistency Chart */}
                 <div className="glass-panel p-6 rounded-2xl shadow-2xl">
                     <div className="flex items-center gap-3 mb-8">

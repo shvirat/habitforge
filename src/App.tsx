@@ -13,7 +13,9 @@ import { NotificationManager } from '@/components/NotificationManager';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+import { NotificationProvider } from '@/context/NotificationContext';
+
+export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   if (loading) return <div className="min-h-screen flex items-center justify-center text-text-primary">Loading...</div>;
   if (!user) return <Navigate to="/login" replace />;
@@ -24,55 +26,57 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <NotificationManager />
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Layout>
-                <Dashboard />
-              </Layout>
-            </ProtectedRoute>
-          } />
-          <Route path="/fixer/:habitId" element={
-            <ProtectedRoute>
-              <Layout>
-                <HabitFixerPage />
-              </Layout>
-            </ProtectedRoute>
-          } />
-          <Route path="/fixer" element={
-            <ProtectedRoute>
-              <Layout>
-                <HabitFixerLanding />
-              </Layout>
-            </ProtectedRoute>
-          } />
-          <Route path="/analytics" element={
-            <ProtectedRoute>
-              <Layout>
-                <Analytics />
-              </Layout>
-            </ProtectedRoute>
-          } />
-          <Route path="/profile" element={
-            <ProtectedRoute>
-              <Layout>
-                <Profile />
-              </Layout>
-            </ProtectedRoute>
-          } />
-          <Route path="/levels" element={
-            <ProtectedRoute>
-              <Layout>
-                <LevelDetails />
-              </Layout>
-            </ProtectedRoute>
-          } />
+        <NotificationProvider>
+          <NotificationManager />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/fixer/:habitId" element={
+              <ProtectedRoute>
+                <Layout>
+                  <HabitFixerPage />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/fixer" element={
+              <ProtectedRoute>
+                <Layout>
+                  <HabitFixerLanding />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Analytics />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Profile />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/levels" element={
+              <ProtectedRoute>
+                <Layout>
+                  <LevelDetails />
+                </Layout>
+              </ProtectedRoute>
+            } />
 
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-        <ToastContainer theme="dark" position="bottom-right" />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+          <ToastContainer theme="dark" position="bottom-right" />
+        </NotificationProvider>
       </AuthProvider>
     </Router>
   );
