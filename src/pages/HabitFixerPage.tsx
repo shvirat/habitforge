@@ -113,7 +113,7 @@ export const HabitFixerPage = () => {
 
                 <div className="space-y-6 relative z-10">
                     <div className={clsx(
-                        "flex items-center justify-between rounded-xl border transition-all duration-300",
+                        "flex items-center justify-between rounded-xl border p-2 transition-all duration-300",
                         windowState === 'open'
                             ? "bg-success/5 border-success/30 text-success shadow-[0_0_20px_rgba(0,230,118,0.05)]"
                             : "bg-surface/30 border-white/5 text-text-muted"
@@ -167,7 +167,7 @@ export const HabitFixerPage = () => {
                             )}
                         </Button>
                     ) : (
-                        <div className="flex items-center gap-3 text-text-muted text-sm justify-center bg-surface/30 rounded-xl border border-white/5 border-dashed">
+                        <div className="flex items-center gap-3 p-2 text-text-muted text-sm justify-center bg-surface/30 rounded-xl border border-white/5 border-dashed">
                             <AlertTriangle size={18} />
                             <span>Verification protocol is currently locked.</span>
                         </div>
