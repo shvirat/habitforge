@@ -26,7 +26,7 @@ export const HabitFixerPage = () => {
         const checkTime = () => {
             const hours = new Date().getHours();
             // 6 PM = 18, 11 PM = 23
-            if (hours >= 18 && hours <= 24) setWindowState('open');
+            if (hours >= 18 && hours <= 23) setWindowState('open');
             else if (hours < 18) setWindowState('early');
             else setWindowState('late');
         };
@@ -122,7 +122,7 @@ export const HabitFixerPage = () => {
                             <Clock size={24} className={windowState === 'open' ? "animate-pulse" : ""} />
                             <div>
                                 <p className="font-bold uppercase tracking-wider text-xs mb-0.5">Check-in Window</p>
-                                <p className="text-sm font-medium">6:00 PM – 11:59 PM</p>
+                                <p className="text-sm font-medium">6:00 PM – 11:00 PM</p>
                             </div>
                         </div>
                         <div className="text-right">

@@ -6,6 +6,7 @@ import type { Habit } from '@/types';
 import { Button } from '@/components/Button';
 import { CreateHabitModal } from '@/components/CreateHabitModal';
 import { SkeletonCard } from '@/components/SkeletonCard';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { clsx } from 'clsx';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -20,6 +21,7 @@ export const Dashboard = () => {
     const [xp, setXp] = useState(0);
     const navigate = useNavigate();
     const actionBase = "h-10 px-4 text-sm flex items-center justify-center gap-2 rounded-xl";
+    const [confirmAction, setConfirmAction] = useState<{ type: string, habitId: string, title: string, message: string } | null>(null);
 
     const loadHabits = async () => {
         if (!user) return;
@@ -146,35 +148,48 @@ export const Dashboard = () => {
                                         <Check size={16} strokeWidth={3} />
                                         Completed
                                     </div>
+                                ) : habit.lastFailed && new Date(habit.lastFailed).toDateString() === new Date().toDateString() ? (
+                                    <div
+                                        className={`w-full ${actionBase} bg-error/10 text-error font-bold border border-error/20`}>
+                                        <X size={16} strokeWidth={3} />
+                                        Failed
+                                    </div>
                                 ) : habit.isHabitFixer ? (
                                     <Button
-                                    variant="accent"
-                                    className={`w-full ${actionBase}`}
-                                    onClick={() => navigate(`/fixer/${habit.id}`)}
+                                        variant="accent"
+                                        className={`w-full ${actionBase}`}
+                                        onClick={() => navigate(`/fixer/${habit.id}`)}
                                     >
-                                    <Camera size={16} />
-                                    Verify Proof
+                                        <Camera size={16} />
+                                        Verify Proof
                                     </Button>
                                 ) : (
                                     <>
                                         <button
-                                        className={`h-10 w-10 flex items-center justify-center rounded-lg
-                                                    text-text-muted border border-1/20
+                                            className={`h-10 w-10 flex items-center justify-center rounded-lg
+                                                    text-text-muted border border-white/5
                                                     hover:text-error hover:bg-error/10 hover:border-error/20
                                                     transition-all active:scale-95`}
+                                            onClick={() => setConfirmAction({
+                                                type: 'fail',
+                                                habitId: habit.id,
+                                                title: 'Fail Protocol?',
+                                                message: 'Marking this as failed will reset your streak and deduct XP. Are you sure?'
+                                            })}
+                                            title="Fail Day"
                                         >
-                                        <X size={18} />
+                                            <X size={18} />
                                         </button>
                                         <Button
-                                        className={`flex-1 ${actionBase}`}
-                                        onClick={async () => {
-                                            if (!user) return;
-                                            await HabitService.completeHabit(user.uid, habit.id);
-                                            loadHabits();
-                                        }}
+                                            className={`flex-1 ${actionBase}`}
+                                            onClick={async () => {
+                                                if (!user) return;
+                                                await HabitService.completeHabit(user.uid, habit.id);
+                                                loadHabits();
+                                            }}
                                         >
-                                        <Check size={16} strokeWidth={3} />
-                                        Complete
+                                            <Check size={16} strokeWidth={3} />
+                                            Complete
                                         </Button>
                                     </>
                                 )}
@@ -193,6 +208,30 @@ export const Dashboard = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onHabitCreated={loadHabits}
+            />
+
+            <ConfirmDialog
+                isOpen={!!confirmAction}
+                onClose={() => setConfirmAction(null)}
+                onConfirm={async () => {
+                    if (!user || !confirmAction) return;
+                    if (confirmAction.type === 'fail') {
+                        try {
+                            await HabitService.failHabit(user.uid, confirmAction.habitId);
+                            loadHabits();
+                        } catch (e) {
+                            console.error(e);
+                        } finally {
+                            setConfirmAction(null);
+                        }
+                    } else {
+                        setConfirmAction(null);
+                    }
+                }}
+                title={confirmAction?.title || ''}
+                message={confirmAction?.message || ''}
+                isDestructive={true}
+                confirmText="Yes, Fail It"
             />
         </div>
     );

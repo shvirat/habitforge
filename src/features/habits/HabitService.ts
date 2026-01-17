@@ -51,7 +51,8 @@ export const HabitService = {
                 ...doc.data(),
                 createdAt: doc.data().createdAt.toDate(),
                 // Convert timestamp to date if present for the type system
-                lastCompleted: doc.data().lastCompleted ? doc.data().lastCompleted.toDate() : undefined
+                lastCompleted: doc.data().lastCompleted ? doc.data().lastCompleted.toDate() : undefined,
+                lastFailed: doc.data().lastFailed ? doc.data().lastFailed.toDate() : undefined
             } as Habit));
         } catch (error) {
             console.error('Error fetching habits:', error);
@@ -111,7 +112,8 @@ export const HabitService = {
             // Reset Streak (Strict Mode) or just keep it? Let's reset streak for now.
             const habitRef = doc(db, HABITS_COLLECTION, habitId);
             await updateDoc(habitRef, {
-                streak: 0
+                streak: 0,
+                lastFailed: Timestamp.now()
             });
 
             // Deduct XP

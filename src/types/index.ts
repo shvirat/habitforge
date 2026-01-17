@@ -14,6 +14,7 @@ export interface Habit {
     streak: number;
     totalCompletions: number;
     lastCompleted?: Date;
+    lastFailed?: Date;
     isArchived: boolean;
     // Habit Fixer specific
     isHabitFixer: boolean;

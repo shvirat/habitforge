@@ -7,6 +7,7 @@ import { LevelBadge } from '@/components/LevelBadge';
 import { User, Archive, Save, X, Edit2, Shield } from 'lucide-react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 export const Profile = () => {
     const { user } = useAuth();
@@ -18,6 +19,7 @@ export const Profile = () => {
     });
     const [imageError, setImageError] = React.useState(false);
     const [habits, setHabits] = React.useState<any[]>([]);
+    const [confirmAction, setConfirmAction] = useState<{ type: string, habitId: string, title: string, message: string } | null>(null);
 
     React.useEffect(() => {
         if (!user) return;
@@ -197,17 +199,12 @@ export const Profile = () => {
                                             <span className="text-[10px] uppercase tracking-wider text-text-muted font-bold">{habit.category}</span>
                                         </div>
                                         <button
-                                            onClick={async () => {
-                                                if (window.confirm("Abort this protocol? It will be archived.")) {
-                                                    try {
-                                                        const { HabitService } = await import('@/features/habits/HabitService');
-                                                        await HabitService.archiveHabit(habit.id);
-                                                        setHabits(prev => prev.filter(h => h.id !== habit.id));
-                                                    } catch (error) {
-                                                        console.error(error);
-                                                    }
-                                                }
-                                            }}
+                                            onClick={() => setConfirmAction({
+                                                type: 'archive',
+                                                habitId: habit.id,
+                                                title: 'Archive Protocol?',
+                                                message: 'This will remove the protocol from your active list. Data will be preserved.'
+                                            })}
                                             className="p-2 text-text-muted hover:text-error hover:bg-error/10 rounded-lg transition-colors opacity-100 group-hover:opacity-100"
                                             title="Archive Protocol"
                                         >
@@ -220,6 +217,30 @@ export const Profile = () => {
                     </div>
                 </div>
             </div>
+            <ConfirmDialog
+                isOpen={!!confirmAction}
+                onClose={() => setConfirmAction(null)}
+                onConfirm={async () => {
+                    if (!confirmAction) return;
+                    if (confirmAction.type === 'archive') {
+                        try {
+                            const { HabitService } = await import('@/features/habits/HabitService');
+                            await HabitService.archiveHabit(confirmAction.habitId);
+                            setHabits(prev => prev.filter(h => h.id !== confirmAction.habitId));
+                        } catch (error) {
+                            console.error(error);
+                        } finally {
+                            setConfirmAction(null);
+                        }
+                    } else {
+                        setConfirmAction(null);
+                    }
+                }}
+                title={confirmAction?.title || ''}
+                message={confirmAction?.message || ''}
+                isDestructive={true}
+                confirmText="Yes, Archive It"
+            />
         </div>
     );
 };
