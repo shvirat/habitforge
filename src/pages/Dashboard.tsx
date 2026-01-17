@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, Check, X, Camera, Trophy, Flame, Zap } from 'lucide-react';
+import { Plus, Check, X, Camera, Trophy, Flame, Zap, Calendar } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { HabitService } from '@/features/habits/HabitService';
 import type { Habit } from '@/types';
@@ -10,6 +10,7 @@ import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { clsx } from 'clsx';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { isSameDay, isSameWeek } from 'date-fns';
 
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -40,12 +41,14 @@ export const Dashboard = () => {
     useEffect(() => {
         loadHabits();
 
-        // Check for missed habits
+        // Check for missed habits from yesterday
         if (user) {
-            HabitService.checkMissedHabits(user.uid).then(missed => {
+            HabitService.processMissedHabits(user.uid).then(missed => {
                 if (missed.length > 0) {
                     const habitNames = missed.map(h => h.title).join(', ');
-                    toast.warn(`You missed ${missed.length} protocol${missed.length > 1 ? 's' : ''} yesterday: ${habitNames}. The forge cools when neglected.`);
+                    toast.error(`Streak Reset! You missed ${missed.length} protocol${missed.length > 1 ? 's' : ''} yesterday: ${habitNames}. XP Penalty applied.`);
+                    // Reload habits to show reset streaks
+                    loadHabits();
                 }
             });
         }
@@ -138,6 +141,11 @@ export const Dashboard = () => {
                                     )}>
                                         {habit.category}
                                     </span>
+                                    {habit.frequency === 'weekly' && (
+                                        <span className="ml-2 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border bg-purple-500/10 text-purple-400 border-purple-500/20">
+                                            Weekly
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="text-right flex flex-col items-end">
                                     <div className="flex items-center gap-1.5 text-orange-500">
@@ -153,57 +161,93 @@ export const Dashboard = () => {
                             </p>
 
                             <div className="flex items-center gap-3 mt-auto relative z-10">
-                                {habit.lastCompleted && new Date(habit.lastCompleted).toDateString() === new Date().toDateString() ? (
-                                    <div
-                                        className={`w-full ${actionBase} bg-success/10 text-success font-bold border border-success/20 shadow-[0_0_15px_rgba(0,230,118,0.1)]`}>
-                                        <Check size={16} strokeWidth={3} />
-                                        Completed
-                                    </div>
-                                ) : habit.lastFailed && new Date(habit.lastFailed).toDateString() === new Date().toDateString() ? (
-                                    <div
-                                        className={`w-full ${actionBase} bg-error/10 text-error font-bold border border-error/20`}>
-                                        <X size={16} strokeWidth={3} />
-                                        Failed
-                                    </div>
-                                ) : habit.isHabitFixer ? (
-                                    <Button
-                                        variant="accent"
-                                        className={`w-full ${actionBase}`}
-                                        onClick={() => navigate(`/fixer/${habit.id}`)}
-                                    >
-                                        <Camera size={16} />
-                                        Verify Proof
-                                    </Button>
-                                ) : (
-                                    <>
-                                        <button
-                                            className={`h-10 w-10 flex items-center justify-center rounded-lg
-                                                    text-text-muted border border-white/5
-                                                    hover:text-error hover:bg-error/10 hover:border-error/20
-                                                    transition-all active:scale-95`}
-                                            onClick={() => setConfirmAction({
-                                                type: 'fail',
-                                                habitId: habit.id,
-                                                title: 'Fail Protocol?',
-                                                message: 'Marking this as failed will reset your streak and deduct XP. Are you sure?'
-                                            })}
-                                            title="Fail Day"
-                                        >
-                                            <X size={18} />
-                                        </button>
-                                        <Button
-                                            className={`flex-1 ${actionBase}`}
-                                            onClick={async () => {
-                                                if (!user) return;
-                                                await HabitService.completeHabit(user.uid, habit.id);
-                                                loadHabits();
-                                            }}
-                                        >
-                                            <Check size={16} strokeWidth={3} />
-                                            Complete
-                                        </Button>
-                                    </>
-                                )}
+                                {(() => {
+                                    const today = new Date();
+                                    const lastCompleted = habit.lastCompleted ? new Date(habit.lastCompleted) : null;
+                                    const isCompleted = lastCompleted && (
+                                        habit.frequency === 'weekly'
+                                            ? isSameWeek(lastCompleted, today, { weekStartsOn: 1 })
+                                            : isSameDay(lastCompleted, today)
+                                    );
+
+                                    if (isCompleted) {
+                                        return (
+                                            <div
+                                                className={`w-full ${actionBase} bg-success/10 text-success font-bold border border-success/20 shadow-[0_0_15px_rgba(0,230,118,0.1)]`}>
+                                                <Check size={16} strokeWidth={3} />
+                                                {habit.frequency === 'weekly' ? 'Week Complete' : 'Completed'}
+                                            </div>
+                                        );
+                                    }
+
+                                    if (habit.frequency === 'weekly') {
+                                        const isSunday = today.getDay() === 0;
+                                        if (!isSunday) {
+                                            return (
+                                                <div className={`w-full ${actionBase} bg-white/5 text-text-muted font-bold border border-white/5 cursor-not-allowed`}>
+                                                    <Calendar size={16} />
+                                                    Available Sunday
+                                                </div>
+                                            );
+                                        }
+                                    }
+
+                                    const isFailed = habit.lastFailed &&
+                                        new Date(habit.lastFailed).toDateString() === today.toDateString();
+
+                                    if (isFailed) {
+                                        return (
+                                            <div className={`w-full ${actionBase} bg-error/10 text-error font-bold border border-error/20`}>
+                                                <X size={16} strokeWidth={3} />
+                                                Failed
+                                            </div>
+                                        );
+                                    }
+
+                                    if (habit.isHabitFixer) {
+                                        return (
+                                            <Button
+                                                variant="accent"
+                                                className={`w-full ${actionBase}`}
+                                                onClick={() => navigate(`/fixer/${habit.id}`)}
+                                            >
+                                                <Camera size={16} />
+                                                Verify Proof
+                                            </Button>
+                                        );
+                                    }
+
+                                    return (
+                                        <>
+                                            <button
+                                                className={`h-10 w-10 flex items-center justify-center rounded-lg
+                                                            text-text-muted border border-white/5
+                                                            hover:text-error hover:bg-error/10 hover:border-error/20
+                                                            transition-all active:scale-95`}
+                                                onClick={() => setConfirmAction({
+                                                    type: 'fail',
+                                                    habitId: habit.id,
+                                                    title: 'Fail Protocol?',
+                                                    message: 'Marking this as failed will reset your streak and deduct XP. Are you sure?'
+                                                })}
+                                                title="Fail Day"
+                                            >
+                                                <X size={18} />
+                                            </button>
+                                            <Button
+                                                className={`flex-1 ${actionBase}`}
+                                                onClick={async () => {
+                                                    if (!user) return;
+                                                    await HabitService.completeHabit(user.uid, habit.id);
+                                                    loadHabits();
+                                                }}
+                                            >
+                                                <Check size={16} strokeWidth={3} />
+                                                Complete
+                                            </Button>
+                                        </>
+                                    );
+                                })()}
                             </div>
                         </div>
                     ))}

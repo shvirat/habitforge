@@ -29,7 +29,7 @@ export const HabitFixerPage = () => {
         const checkTime = () => {
             const hours = new Date().getHours();
             // 6 PM = 18, 11 PM = 23
-            if (hours >= 18 && hours <= 23) setWindowState('open');
+            if (hours >= 18 && hours < 23) setWindowState('open');
             else if (hours < 18) setWindowState('early');
             else setWindowState('late');
         };
@@ -108,8 +108,8 @@ export const HabitFixerPage = () => {
                     </div>
                 </div>
 
-                <div className="mb-8 p-6 bg-surface/40 backdrop-blur-sm rounded-2xl border border-white/5 relative group">
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent rounded-l-2xl" />
+                <div className="mb-8 p-6 bg-surface/40 backdrop-blur-sm rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div className="absolute inset-y-0 left-0 w-1 bg-accent" />
                     <h2 className="text-xl font-bold mb-2 text-text-primary">{habit.title}</h2>
                     <p className="text-text-secondary text-sm italic leading-relaxed">"{habit.purpose}"</p>
                 </div>

@@ -283,6 +283,9 @@ export const HabitService = {
             yesterday.setDate(yesterday.getDate() - 1);
 
             const missedHabits = habits.filter(habit => {
+                // Ignore weekly habits from the daily 'missed' check (needs separate weekly check logic eventually)
+                if (habit.frequency === 'weekly') return false;
+
                 // Ignore if created today or yesterday
                 if (habit.createdAt.toDateString() === today.toDateString() ||
                     habit.createdAt.toDateString() === yesterday.toDateString()) {
@@ -291,7 +294,18 @@ export const HabitService = {
 
                 // Check if completed today or yesterday
                 const lastCompleted = habit.lastCompleted;
-                if (!lastCompleted) return true; // Never completed, but old enough -> missed
+                const lastFailed = habit.lastFailed;
+
+                // If already marked as failed yesterday/today, it's not "missed" in the sense of needing processing
+                if (lastFailed) {
+                    if (lastFailed.toDateString() === today.toDateString() ||
+                        lastFailed.toDateString() === yesterday.toDateString()) {
+                        return false;
+                    }
+                }
+
+                // If never completed, but old enough -> missed
+                if (!lastCompleted) return true;
 
                 const isCompletedToday = lastCompleted.toDateString() === today.toDateString();
                 const isCompletedYesterday = lastCompleted.toDateString() === yesterday.toDateString();
@@ -304,6 +318,24 @@ export const HabitService = {
             console.error("Error checking missed habits:", error);
             return [];
         }
+    },
+
+    // Process missed habits (Apply penalty, reset streak)
+    processMissedHabits: async (userId: string) => {
+        const missed = await HabitService.checkMissedHabits(userId);
+        if (missed.length === 0) return [];
+
+        const processed = [];
+        for (const habit of missed) {
+            try {
+                // Apply failure logic
+                await HabitService.failHabit(userId, habit.id);
+                processed.push(habit);
+            } catch (error) {
+                console.error(`Failed to process missed occurred for habit ${habit.id}`, error);
+            }
+        }
+        return processed;
     },
 
     // Get all logs for a user (for level history)
