@@ -240,5 +240,30 @@ export const HabitService = {
             console.error('Error completing habit:', error);
             throw error;
         }
+    },
+
+    // Get logs for a specific habit (for history view)
+    getHabitLogs: async (userId: string, habitId: string) => {
+        try {
+            const q = query(
+                collection(db, 'logs'),
+                where('userId', '==', userId),
+                where('habitId', '==', habitId),
+                where('status', '==', 'completed')
+            );
+
+            const querySnapshot = await getDocs(q);
+            // Sort client-side to avoid complex index requirements
+            return querySnapshot.docs
+                .map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    completedAt: doc.data().completedAt?.toDate ? doc.data().completedAt.toDate() : new Date(doc.data().date)
+                }))
+                .sort((a: any, b: any) => b.completedAt.getTime() - a.completedAt.getTime());
+        } catch (error) {
+            console.error('Error fetching habit logs:', error);
+            throw error;
+        }
     }
 };

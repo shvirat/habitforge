@@ -9,7 +9,7 @@ function cn(...inputs: ClassValue[]) {
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'outline';
-    size?: 'sm' | 'md' | 'lg';
+    size?: 'sm' | 'md' | 'lg' | 'icon';
     isLoading?: boolean;
 }
 
@@ -35,7 +35,8 @@ export const Button: React.FC<ButtonProps> = ({
     const sizes = {
         sm: 'h-9 px-4 text-xs uppercase',
         md: 'h-11 px-6 text-sm uppercase',
-        lg: 'h-14 px-8 text-base uppercase'
+        lg: 'h-14 px-8 text-base uppercase',
+        icon: 'h-10 w-10 p-0'
     };
 
     return (

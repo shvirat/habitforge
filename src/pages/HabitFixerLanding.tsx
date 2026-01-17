@@ -73,7 +73,7 @@ export const HabitFixerLanding = () => {
                                 onClick={() => navigate(`/fixer/${habit.id}`)}
                             >
                                 <Camera size={18} className="mr-2" />
-                                Verify Now
+                                Go to Protocol
                                 <ArrowRight size={18} className="ml-auto opacity-70 group-hover:translate-x-1 transition-transform" />
                             </Button>
                         </div>

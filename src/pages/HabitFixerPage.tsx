@@ -12,6 +12,8 @@ import { toast } from 'react-toastify';
 import { ArrowLeft, Clock, ShieldCheck, AlertTriangle, Camera } from 'lucide-react';
 import { clsx } from 'clsx';
 
+import { ProofGallery } from '@/components/ProofGallery';
+
 export const HabitFixerPage = () => {
     const { habitId } = useParams();
     const { user } = useAuth();
@@ -19,6 +21,7 @@ export const HabitFixerPage = () => {
     const [habit, setHabit] = useState<Habit | null>(null);
     const [loading, setLoading] = useState(true);
     const [showCamera, setShowCamera] = useState(false);
+    const [showHistory, setShowHistory] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [windowState, setWindowState] = useState<'open' | 'early' | 'late'>('early');
 
@@ -144,9 +147,14 @@ export const HabitFixerPage = () => {
                             </div>
                             <h3 className="text-2xl font-black text-text-primary mb-2 tracking-tight">Protocol Verified</h3>
                             <p className="text-text-secondary mb-8 max-w-xs mx-auto">You have successfully proved your discipline for today. The forge grows stronger.</p>
-                            <Button className="min-w-[200px] text-sm sm:text-base px-3 py-2 sm:px-4 sm:py-2.5" variant="outline" onClick={() => navigate('/dashboard')}>
-                                Return to Dashboard
-                            </Button>
+                            <div className="flex flex-col md:flex-row gap-4">
+                                <Button className="min-w-[160px]" variant="outline" onClick={() => navigate('/dashboard')}>
+                                    Back to Dashboard
+                                </Button>
+                                <Button className="min-w-[160px]" variant="secondary" onClick={() => setShowHistory(true)}>
+                                    View History
+                                </Button>
+                            </div>
                         </div>
                     ) : windowState === 'open' ? (
                         <Button
@@ -172,8 +180,19 @@ export const HabitFixerPage = () => {
                             <span>Verification protocol is currently locked.</span>
                         </div>
                     )}
+
+                    {/* Always show history option if not verified (since verified state has its own button) */}
+                    {!(habit.lastCompleted && habit.lastCompleted.toDateString() === new Date().toDateString()) && (
+                        <div className="flex justify-center mt-4">
+                            <Button variant="ghost" className="text-sm text-text-muted hover:text-text-primary" onClick={() => setShowHistory(true)}>
+                                View Past Verifications
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </div>
+
+
 
             {showCamera && (
                 <CameraCapture
@@ -181,6 +200,12 @@ export const HabitFixerPage = () => {
                     onCancel={() => setShowCamera(false)}
                 />
             )}
-        </div>
+
+            <ProofGallery
+                habitId={habit.id}
+                isOpen={showHistory}
+                onClose={() => setShowHistory(false)}
+            />
+        </div >
     );
 };
