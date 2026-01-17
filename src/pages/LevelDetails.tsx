@@ -2,12 +2,30 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Trophy, Star, Shield, Zap, TrendingUp } from 'lucide-react';
+import { Trophy, Star, Shield, Zap, TrendingUp, History, ChevronDown, ChevronUp } from 'lucide-react';
 import { XP_CONSTANTS, calculateLevelProgress } from '@/utils/gamification';
+import { HabitService } from '@/features/habits/HabitService';
+import { format } from 'date-fns';
+import { clsx } from 'clsx';
 
 export const LevelDetails = () => {
     const { user } = useAuth();
     const [stats, setStats] = useState({ level: 1, xp: 0 });
+    const [logs, setLogs] = useState<any[]>([]);
+    const [showHistory, setShowHistory] = useState(false);
+    const [loadingLogs, setLoadingLogs] = useState(false);
+
+    const [habitMap, setHabitMap] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        if (!user) return;
+        // Fetch habits to build a lookup map for older logs that don't satisfy the habitTitle field
+        HabitService.getUserHabits(user.uid).then(habits => {
+            const map: Record<string, string> = {};
+            habits.forEach(h => map[h.id] = h.title);
+            setHabitMap(map);
+        });
+    }, [user]);
 
     useEffect(() => {
         if (!user) return;
@@ -20,6 +38,16 @@ export const LevelDetails = () => {
         return () => unsub();
     }, [user]);
 
+    useEffect(() => {
+        if (showHistory && user && logs.length === 0) {
+            setLoadingLogs(true);
+            HabitService.getUserGlobalLogs(user.uid)
+                .then(setLogs)
+                .catch(console.error)
+                .finally(() => setLoadingLogs(false));
+        }
+    }, [showHistory, user]);
+
     const {
         nextLevelXp,
         progressPercent
@@ -27,6 +55,7 @@ export const LevelDetails = () => {
 
     return (
         <div className="space-y-8 max-w-4xl mx-auto pb-20">
+            {/* ... (Header and Progress Card remain same) ... */}
             <header className="text-center space-y-4">
                 <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 shadow-xl shadow-orange-500/20 mb-4 animate-bounce-slow">
                     <Trophy className="text-white w-12 h-12" />
@@ -111,6 +140,53 @@ export const LevelDetails = () => {
                         <span>Custom profile badges (Level 10)</span>
                     </li>
                 </ul>
+            </div>
+
+            {/* History Dropdown */}
+            <div className="bg-surface border border-secondary rounded-xl overflow-hidden">
+                <button
+                    onClick={() => setShowHistory(!showHistory)}
+                    className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors"
+                >
+                    <div className="flex items-center gap-3">
+                        <History size={24} className="text-primary" />
+                        <h3 className="font-bold text-lg">XP History</h3>
+                    </div>
+                    {showHistory ? <ChevronUp /> : <ChevronDown />}
+                </button>
+
+                {showHistory && (
+                    <div className="border-t border-secondary max-h-[400px] overflow-y-auto p-4 space-y-2">
+                        {loadingLogs ? (
+                            <div className="text-center py-8 text-text-muted">Loading history...</div>
+                        ) : logs.length === 0 ? (
+                            <div className="text-center py-8 text-text-muted">No history recorded yet.</div>
+                        ) : (
+                            logs.map((log) => (
+                                <div key={log.id} className="flex items-center justify-between p-3 rounded-lg bg-surface/50 border border-white/5">
+                                    <div className="flex items-center gap-3">
+                                        <div className={clsx(
+                                            "w-2 h-2 rounded-full",
+                                            log.status === 'completed' ? "bg-success" : "bg-error"
+                                        )} />
+                                        <div>
+                                            <p className="font-medium text-sm">
+                                                {log.habitTitle || habitMap[log.habitId] || (log.habitId ? 'Protocol Completion' : 'Activity')}
+                                            </p>
+                                            <p className="text-xs text-text-muted">{format(log.completedAt, 'MMM d, yyyy • h:mm a')}</p>
+                                        </div>
+                                    </div>
+                                    <span className={clsx(
+                                        "font-mono font-bold text-sm",
+                                        log.status === 'completed' ? "text-success" : "text-error"
+                                    )}>
+                                        {log.status === 'completed' ? '+' : ''}{log.xpEarned || log.xpChange || 0} XP
+                                    </span>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -99,10 +99,16 @@ export const HabitService = {
 
     failHabit: async (userId: string, habitId: string) => {
         try {
+            // Fetch habit to get title
+            const habitRef = doc(db, HABITS_COLLECTION, habitId);
+            const habitDoc = await getDoc(habitRef);
+            const habitTitle = habitDoc.exists() ? habitDoc.data().title : 'Unknown Protocol';
+
             // Log failure
             await addDoc(collection(db, 'logs'), {
                 userId,
                 habitId,
+                habitTitle,
                 date: new Date().toISOString().split('T')[0],
                 completedAt: Timestamp.now(),
                 status: 'failed',
@@ -110,7 +116,6 @@ export const HabitService = {
             });
 
             // Reset Streak (Strict Mode) or just keep it? Let's reset streak for now.
-            const habitRef = doc(db, HABITS_COLLECTION, habitId);
             await updateDoc(habitRef, {
                 streak: 0,
                 lastFailed: Timestamp.now()
@@ -161,6 +166,7 @@ export const HabitService = {
             await addDoc(collection(db, 'logs'), {
                 userId,
                 habitId,
+                habitTitle: data.title || 'Protocol',
                 date: new Date().toISOString().split('T')[0],
                 completedAt: Timestamp.now(),
                 status: 'completed',
@@ -212,6 +218,7 @@ export const HabitService = {
             await addDoc(collection(db, 'logs'), {
                 userId,
                 habitId,
+                habitTitle: data.title || 'Protocol',
                 date: new Date().toISOString().split('T')[0],
                 completedAt: Timestamp.now(),
                 status: 'completed',
@@ -263,6 +270,75 @@ export const HabitService = {
                 .sort((a: any, b: any) => b.completedAt.getTime() - a.completedAt.getTime());
         } catch (error) {
             console.error('Error fetching habit logs:', error);
+            throw error;
+        }
+    },
+
+    // Check for missed habits from yesterday
+    checkMissedHabits: async (userId: string) => {
+        try {
+            const habits = await HabitService.getUserHabits(userId);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            const missedHabits = habits.filter(habit => {
+                // Ignore if created today or yesterday
+                if (habit.createdAt.toDateString() === today.toDateString() ||
+                    habit.createdAt.toDateString() === yesterday.toDateString()) {
+                    return false;
+                }
+
+                // Check if completed today or yesterday
+                const lastCompleted = habit.lastCompleted;
+                if (!lastCompleted) return true; // Never completed, but old enough -> missed
+
+                const isCompletedToday = lastCompleted.toDateString() === today.toDateString();
+                const isCompletedYesterday = lastCompleted.toDateString() === yesterday.toDateString();
+
+                return !isCompletedToday && !isCompletedYesterday;
+            });
+
+            return missedHabits;
+        } catch (error) {
+            console.error("Error checking missed habits:", error);
+            return [];
+        }
+    },
+
+    // Get all logs for a user (for level history)
+    getUserGlobalLogs: async (userId: string) => {
+        try {
+            const q = query(
+                collection(db, 'logs'),
+                where('userId', '==', userId),
+                orderBy('completedAt', 'desc') // Might require index, fallback to client sort if needed
+            );
+
+            const querySnapshot = await getDocs(q);
+            return querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                completedAt: doc.data().completedAt?.toDate ? doc.data().completedAt.toDate() : new Date(doc.data().date)
+            }));
+        } catch (error) {
+            // Fallback for missing index
+            if ((error as any)?.code === 'failed-precondition') {
+                console.warn('Missing index for global logs, falling back to client-side sort');
+                const q = query(
+                    collection(db, 'logs'),
+                    where('userId', '==', userId)
+                );
+                const querySnapshot = await getDocs(q);
+                return querySnapshot.docs
+                    .map(doc => ({
+                        id: doc.id,
+                        ...doc.data(),
+                        completedAt: doc.data().completedAt?.toDate ? doc.data().completedAt.toDate() : new Date(doc.data().date)
+                    }))
+                    .sort((a: any, b: any) => b.completedAt.getTime() - a.completedAt.getTime());
+            }
+            console.error('Error fetching global logs:', error);
             throw error;
         }
     }

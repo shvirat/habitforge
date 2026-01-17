@@ -9,6 +9,7 @@ import { SkeletonCard } from '@/components/SkeletonCard';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { clsx } from 'clsx';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -38,6 +39,16 @@ export const Dashboard = () => {
 
     useEffect(() => {
         loadHabits();
+
+        // Check for missed habits
+        if (user) {
+            HabitService.checkMissedHabits(user.uid).then(missed => {
+                if (missed.length > 0) {
+                    const habitNames = missed.map(h => h.title).join(', ');
+                    toast.warn(`You missed ${missed.length} protocol${missed.length > 1 ? 's' : ''} yesterday: ${habitNames}. The forge cools when neglected.`);
+                }
+            });
+        }
 
         // Listen for XP changes
         if (user) {
