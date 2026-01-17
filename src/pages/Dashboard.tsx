@@ -5,6 +5,7 @@ import { HabitService } from '@/features/habits/HabitService';
 import type { Habit } from '@/types';
 import { Button } from '@/components/Button';
 import { CreateHabitModal } from '@/components/CreateHabitModal';
+import { HabitDetailsModal } from '@/components/HabitDetailsModal';
 import { SkeletonCard } from '@/components/SkeletonCard';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { clsx } from 'clsx';
@@ -19,6 +20,7 @@ export const Dashboard = () => {
     const { user } = useAuth();
     const [habits, setHabits] = useState<Habit[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
     const [loading, setLoading] = useState(true);
     const [xp, setXp] = useState(0);
     const navigate = useNavigate();
@@ -111,7 +113,12 @@ export const Dashboard = () => {
                     {habits.map((habit) => (
                         <div
                             key={habit.id}
-                            className="glass-card rounded-2xl p-6 group relative overflow-hidden flex flex-col"
+                            className="glass-card rounded-2xl p-6 group relative overflow-hidden flex flex-col cursor-pointer transition-transform hover:scale-[1.01]"
+                            onClick={(e) => {
+                                // Prevent opening if clicking on buttons
+                                if ((e.target as HTMLElement).closest('button')) return;
+                                setSelectedHabit(habit);
+                            }}
                         >
                             {/* Card Glow Effect */}
                             <div className="absolute -right-20 -top-20 w-40 h-40 bg-primary/10 rounded-full blur-[50px] group-hover:bg-primary/20 transition-all duration-500" />
@@ -263,6 +270,13 @@ export const Dashboard = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onHabitCreated={loadHabits}
+            />
+
+            <HabitDetailsModal
+                habit={selectedHabit}
+                isOpen={!!selectedHabit}
+                onClose={() => setSelectedHabit(null)}
+                onHabitUpdated={loadHabits}
             />
 
             <ConfirmDialog

@@ -5,12 +5,14 @@ import { HabitService } from '@/features/habits/HabitService';
 import type { Habit } from '@/types';
 import { Camera, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/Button';
+import { HabitDetailsModal } from '@/components/HabitDetailsModal';
 
 export const HabitFixerLanding = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [habits, setHabits] = useState<Habit[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
 
     useEffect(() => {
         const loadHabits = async () => {
@@ -62,7 +64,13 @@ export const HabitFixerLanding = () => {
             ) : (
                 <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {habits.map((habit) => (
-                        <div key={habit.id} className="glass-card rounded-2xl p-5 md:p-6 group relative overflow-hidden border-accent/20 hover:border-accent/50 transition-all duration-300 flex flex-col">
+                        <div key={habit.id} className="glass-card rounded-2xl p-5 md:p-6 group relative overflow-hidden border-accent/20 hover:border-accent/50 transition-all duration-300 flex flex-col"
+                            onClick={(e) => {
+                                // Prevent opening if clicking on buttons
+                                if ((e.target as HTMLElement).closest('button')) return;
+                                setSelectedHabit(habit);
+                            }}
+                        >
                             {/* Hover Effect */}
                             <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-accent/20 rounded-full blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -80,6 +88,21 @@ export const HabitFixerLanding = () => {
                     ))}
                 </div>
             )}
+
+            <HabitDetailsModal
+                habit={selectedHabit}
+                isOpen={!!selectedHabit}
+                onClose={() => setSelectedHabit(null)}
+                onHabitUpdated={() => {
+                    // Refresh habits if needed, or update local state
+                    // For now simple refresh of list could work if complex logic isn't needed
+                    // But since we are just editing details, maybe just closing is enough or re-fetching
+                    // Let's re-fetch to be safe if title changed
+                    if (user) {
+                        HabitService.getUserHabits(user.uid).then(all => setHabits(all.filter(h => h.isHabitFixer)));
+                    }
+                }}
+            />
         </div>
     );
 };

@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { LevelBadge } from '@/components/LevelBadge';
-import { User, Archive, Save, X, Edit2, Shield } from 'lucide-react';
+import { User, Save, X, Edit2, Shield, Trash2, ShieldCheckIcon } from 'lucide-react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
@@ -180,7 +180,7 @@ export const Profile = () => {
                     <div className="glass-card p-6 rounded-2xl">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-                                <Archive size={20} className="text-accent" />
+                                <ShieldCheckIcon size={20} className="text-accent" />
                                 Active Protocols
                             </h3>
                             <span className="px-2.5 py-1 bg-white/5 rounded-md text-xs font-bold text-text-muted border border-white/5">{habits.length} Active</span>
@@ -200,15 +200,15 @@ export const Profile = () => {
                                         </div>
                                         <button
                                             onClick={() => setConfirmAction({
-                                                type: 'archive',
+                                                type: 'delete',
                                                 habitId: habit.id,
-                                                title: 'Archive Protocol?',
-                                                message: 'This will remove the protocol from your active list. Data will be preserved.'
+                                                title: 'Delete Protocol?',
+                                                message: 'This will permanently remove the protocol. This action cannot be undone.'
                                             })}
                                             className="p-2 text-text-muted hover:text-error hover:bg-error/10 rounded-lg transition-colors opacity-100 group-hover:opacity-100"
-                                            title="Archive Protocol"
+                                            title="Delete Protocol"
                                         >
-                                            <Archive size={18} />
+                                            <Trash2 size={18} />
                                         </button>
                                     </div>
                                 ))}
@@ -222,10 +222,10 @@ export const Profile = () => {
                 onClose={() => setConfirmAction(null)}
                 onConfirm={async () => {
                     if (!confirmAction) return;
-                    if (confirmAction.type === 'archive') {
+                    if (confirmAction.type === 'delete') {
                         try {
                             const { HabitService } = await import('@/features/habits/HabitService');
-                            await HabitService.archiveHabit(confirmAction.habitId);
+                            await HabitService.deleteHabit(confirmAction.habitId);
                             setHabits(prev => prev.filter(h => h.id !== confirmAction.habitId));
                         } catch (error) {
                             console.error(error);
@@ -239,7 +239,7 @@ export const Profile = () => {
                 title={confirmAction?.title || ''}
                 message={confirmAction?.message || ''}
                 isDestructive={true}
-                confirmText="Yes, Archive It"
+                confirmText="Yes, Delete It"
             />
         </div>
     );

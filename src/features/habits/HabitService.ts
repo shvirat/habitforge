@@ -9,7 +9,8 @@ import {
     updateDoc,
     increment,
     Timestamp,
-    orderBy
+    orderBy,
+    deleteDoc
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Habit } from '@/types';
@@ -31,6 +32,17 @@ export const HabitService = {
             return docRef.id;
         } catch (error) {
             console.error('Error creating habit:', error);
+            throw error;
+        }
+    },
+
+    // Update habit details
+    updateHabit: async (habitId: string, updates: Partial<Habit>) => {
+        try {
+            const habitRef = doc(db, HABITS_COLLECTION, habitId);
+            await updateDoc(habitRef, updates);
+        } catch (error) {
+            console.error('Error updating habit:', error);
             throw error;
         }
     },
@@ -60,13 +72,14 @@ export const HabitService = {
         }
     },
 
-    // Toggle habit archive status (soft delete)
-    archiveHabit: async (habitId: string) => {
+    // Permanently delete a habit
+    deleteHabit: async (habitId: string) => {
         try {
             const habitRef = doc(db, HABITS_COLLECTION, habitId);
-            await updateDoc(habitRef, { isArchived: true });
+            await deleteDoc(habitRef);
+            // Note: Orphan logs are kept for historical XP/Level integrity.
         } catch (error) {
-            console.error('Error archiving habit:', error);
+            console.error('Error deleting habit:', error);
             throw error;
         }
     },
