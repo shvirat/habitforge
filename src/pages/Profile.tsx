@@ -5,9 +5,9 @@ import { useNotification } from '@/context/NotificationContext';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { LevelBadge } from '@/components/LevelBadge';
-import { User, Save, X, Edit2, Shield, Trash2, ShieldCheckIcon, Bell } from 'lucide-react';
+import { User, Save, X, Edit2, Shield, Trash2, ShieldCheckIcon, Bell, LogOut } from 'lucide-react';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, auth } from '@/lib/firebase';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 export const Profile = () => {
@@ -119,6 +119,17 @@ export const Profile = () => {
                             <Link to="/levels" className="block transform hover:scale-[1.02] transition-transform duration-300">
                                 <LevelBadge xp={xp} />
                             </Link>
+                        </div>
+
+                        <div className="mt-6 pt-6 border-t border-white/5 mx-2">
+                            <Button
+                                variant="ghost"
+                                className="w-full flex items-center justify-center gap-2 text-error hover:text-error hover:bg-error/10"
+                                onClick={() => auth.signOut()}
+                            >
+                                <LogOut size={18} />
+                                Sign Out
+                            </Button>
                         </div>
                     </div>
                 </div>
