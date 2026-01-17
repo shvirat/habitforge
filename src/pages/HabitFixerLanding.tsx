@@ -62,15 +62,14 @@ export const HabitFixerLanding = () => {
             ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {habits.map((habit) => (
-                        <div key={habit.id} className="glass-card rounded-2xl p-6 group relative overflow-hidden border-accent/20 hover:border-accent/50 transition-all duration-300">
+                        <div key={habit.id} className="glass-card rounded-2xl p-6 group relative overflow-hidden border-accent/20 hover:border-accent/50 transition-all duration-300 flex flex-col">
                             {/* Hover Effect */}
                             <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-accent/20 rounded-full blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                             <h3 className="font-bold text-xl text-text-primary mb-2 relative z-10 group-hover:text-accent transition-colors">{habit.title}</h3>
-                            <p className="text-text-secondary text-sm mb-8 relative z-10 line-clamp-2">{habit.purpose}</p>
-
+                            <p className="text-text-secondary text-sm mb-8 relative z-10 line-clamp-3">{habit.purpose}</p>
                             <Button
-                                className="w-full bg-accent hover:bg-accent/90 text-white shadow-lg shadow-accent/20 border border-accent/50 relative z-10 group-hover:shadow-accent/40"
+                                className="w-full bg-accent hover:bg-accent/90 text-white shadow-lg shadow-accent/20 border border-accent/50 mt-auto relative z-10 group-hover:shadow-accent/40"
                                 onClick={() => navigate(`/fixer/${habit.id}`)}
                             >
                                 <Camera size={18} className="mr-2" />
