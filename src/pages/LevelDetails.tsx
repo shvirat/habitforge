@@ -3,7 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Trophy, Star, Shield, Zap, TrendingUp, History, ChevronDown, ChevronUp } from 'lucide-react';
-import { XP_CONSTANTS, calculateLevelProgress } from '@/utils/gamification';
+import { XP_CONSTANTS, calculateLevelProgress, getRankTitle } from '@/utils/gamification';
 import { HabitService } from '@/features/habits/HabitService';
 import { format } from 'date-fns';
 import { clsx } from 'clsx';
@@ -63,7 +63,7 @@ export const LevelDetails = () => {
                 <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-600">
                     Level {stats.level}
                 </h1>
-                <p className="text-text-secondary text-base md:text-lg">Master of Consistency</p>
+                <p className="text-text-secondary text-base md:text-lg">{getRankTitle(stats.level)}</p>
             </header>
 
             {/* Progress Card */}

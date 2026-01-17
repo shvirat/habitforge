@@ -29,7 +29,7 @@ export interface HabitLog {
     completedAt: Date;
     status: 'completed' | 'failed' | 'skipped';
     failReason?: string;
-    proofImageUrl?: string; // For Habit Fixer
+    proofBase64?: string; // For Habit Fixer
 }
 
 export interface UserProfile {

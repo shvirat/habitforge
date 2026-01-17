@@ -42,3 +42,18 @@ export const calculateLevelProgress = (level: number, xp: number) => {
         progressPercent
     };
 };
+
+export const LEVELS = [
+    { level: 1, xp: 0, title: 'Novice', badge: 'Bronze' },
+    { level: 5, xp: 500, title: 'Apprentice', badge: 'Silver' },
+    { level: 10, xp: 2000, title: 'Disciple', badge: 'Gold' },
+    { level: 20, xp: 5000, title: 'Master', badge: 'Platinum' },
+    { level: 50, xp: 20000, title: 'Legend', badge: 'Diamond' }
+];
+
+export const getRankTitle = (level: number): string => {
+    // specific levels have titles, but we want ranges.
+    // E.g. Level 1-4 = Novice, 5-9 = Apprentice
+    const matched = LEVELS.slice().reverse().find(l => level >= l.level);
+    return matched ? matched.title : 'Novice';
+};

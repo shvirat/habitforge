@@ -145,6 +145,12 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCance
             // Actually, for "proof", true non-mirrored is better for text readability.
             // Let's keep it raw (true image).
 
+            // Apply mirroring if needed to match the preview
+            if (isMirrored) {
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+            }
+
             ctx.drawImage(videoRef.current, 0, 0);
 
             // Generate Freeze Frame Preview
