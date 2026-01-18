@@ -110,7 +110,7 @@ export const HabitService = {
         return false;
     },
 
-    failHabit: async (userId: string, habitId: string) => {
+    failHabit: async (userId: string, habitId: string, failureDate: Date = new Date()) => {
         try {
             // Fetch habit to get title
             const habitRef = doc(db, HABITS_COLLECTION, habitId);
@@ -122,8 +122,8 @@ export const HabitService = {
                 userId,
                 habitId,
                 habitTitle,
-                date: new Date().toISOString().split('T')[0],
-                completedAt: Timestamp.now(),
+                date: failureDate.toISOString().split('T')[0],
+                completedAt: Timestamp.fromDate(failureDate),
                 status: 'failed',
                 xpChange: -XP_CONSTANTS.HABIT_FAILURE_PENALTY
             });
@@ -131,7 +131,7 @@ export const HabitService = {
             // Reset Streak (Strict Mode) or just keep it? Let's reset streak for now.
             await updateDoc(habitRef, {
                 streak: 0,
-                lastFailed: Timestamp.now()
+                lastFailed: Timestamp.fromDate(failureDate)
             });
 
             // Deduct XP
@@ -338,11 +338,15 @@ export const HabitService = {
         const missed = await HabitService.checkMissedHabits(userId);
         if (missed.length === 0) return [];
 
+        // Calculate yesterday for retroactive failure
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+
         const processed = [];
         for (const habit of missed) {
             try {
-                // Apply failure logic
-                await HabitService.failHabit(userId, habit.id);
+                // Apply failure logic retroactively for yesterday
+                await HabitService.failHabit(userId, habit.id, yesterday);
                 processed.push(habit);
             } catch (error) {
                 console.error(`Failed to process missed occurred for habit ${habit.id}`, error);

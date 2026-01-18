@@ -26,17 +26,35 @@ export const HabitFixerPage = () => {
     const [windowState, setWindowState] = useState<'open' | 'early' | 'late'>('early');
 
     useEffect(() => {
+        if (!habit) return;
+
         const checkTime = () => {
-            const hours = new Date().getHours();
-            // 6 PM = 18, 11 PM = 23
-            if (hours >= 18 && hours < 23) setWindowState('open');
-            else if (hours < 18) setWindowState('early');
-            else setWindowState('late');
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+            // Default to 18:00 - 23:00 if not set (backward compatibility)
+            const startStr = habit.windowStart || '18:00';
+            const endStr = habit.windowEnd || '23:00';
+
+            const [startH, startM] = startStr.split(':').map(Number);
+            const [endH, endM] = endStr.split(':').map(Number);
+
+            const startMinutes = startH * 60 + startM;
+            const endMinutes = endH * 60 + endM;
+
+            if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
+                setWindowState('open');
+            } else if (currentMinutes < startMinutes) {
+                setWindowState('early');
+            } else {
+                setWindowState('late');
+            }
         };
+
         checkTime();
         const timer = setInterval(checkTime, 60000);
         return () => clearInterval(timer);
-    }, []);
+    }, [habit]);
 
     useEffect(() => {
         if (!habitId) return;
@@ -94,7 +112,7 @@ export const HabitFixerPage = () => {
                 <ArrowLeft className="mr-2" size={20} /> Back to Dashboard
             </Button>
 
-            <div className="glass-panel rounded-3xl p-8 md:p-10 shadow-2xl relative overflow-hidden border-t border-white/10">
+            <div className="glass-panel rounded-3xl p-6 md:p-10 shadow-2xl relative overflow-hidden border-t border-white/10">
                 {/* Background accent */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-[80px] pointer-events-none" />
 
@@ -103,8 +121,8 @@ export const HabitFixerPage = () => {
                         <ShieldCheck className="text-accent" size={32} />
                     </div>
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-black text-text-primary tracking-tight">Verification Protocol</h1>
-                        <p className="text-text-secondary text-sm font-medium">Verify your discipline with photographic evidence.</p>
+                        <h1 className="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Verification Protocol</h1>
+                        <p className="text-text-secondary font-medium">Verify your discipline with photographic evidence.</p>
                     </div>
                 </div>
 
@@ -125,7 +143,18 @@ export const HabitFixerPage = () => {
                             <Clock size={24} className={windowState === 'open' ? "animate-pulse" : ""} />
                             <div>
                                 <p className="font-bold uppercase tracking-wider text-xs mb-0.5">Check-in Window</p>
-                                <p className="text-sm font-medium">6:00 PM – 11:00 PM</p>
+                                <p className="text-sm font-medium">
+                                    {(() => {
+                                        const formatTime = (time?: string) => {
+                                            if (!time) return '6:00 PM'; // Default
+                                            const [h, m] = time.split(':').map(Number);
+                                            const ampm = h >= 12 ? 'PM' : 'AM';
+                                            const h12 = h % 12 || 12;
+                                            return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+                                        };
+                                        return `${formatTime(habit.windowStart)} – ${formatTime(habit.windowEnd)}`;
+                                    })()}
+                                </p>
                             </div>
                         </div>
                         <div className="text-right">
@@ -140,7 +169,7 @@ export const HabitFixerPage = () => {
 
                     {/* Completion Check */}
                     {habit.lastCompleted && habit.lastCompleted.toDateString() === new Date().toDateString() ? (
-                        <div className="flex flex-col items-center justify-center p-10 bg-success/5 rounded-2xl border border-success/20 text-center animate-fade-in relative overflow-hidden">
+                        <div className="flex flex-col items-center justify-center p-6 md:p-8 bg-success/5 rounded-2xl border border-success/20 text-center animate-fade-in relative overflow-hidden">
                             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay" />
                             <div className="w-20 h-20 bg-success text-background rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(0,230,118,0.4)] animate-scale-up">
                                 <ShieldCheck size={40} strokeWidth={2.5} />

@@ -23,7 +23,9 @@ export const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ isOpen, onCl
         purpose: '',
         category: 'health' as HabitCategory,
         frequency: 'daily' as HabitFrequency,
-        isHabitFixer: false
+        isHabitFixer: false,
+        windowStart: '18:00',
+        windowEnd: '23:00'
     });
 
     if (!isOpen) return null;
@@ -31,6 +33,21 @@ export const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ isOpen, onCl
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return;
+
+        if (formData.isHabitFixer) {
+            const start = new Date(`1970-01-01T${formData.windowStart}`);
+            const end = new Date(`1970-01-01T${formData.windowEnd}`);
+            const diffMinutes = (end.getTime() - start.getTime()) / 60000;
+
+            if (diffMinutes < 30) {
+                toast.error('Verification window must be at least 30 minutes.');
+                return;
+            }
+            if (end <= start) {
+                toast.error('End time must be after start time.');
+                return;
+            }
+        }
 
         try {
             setLoading(true);
@@ -128,6 +145,37 @@ export const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ isOpen, onCl
                             <span className="text-xs text-text-muted block mt-0.5">Requires mandatory selfie proof between 6-11 PM.</span>
                         </div>
                     </div>
+
+                    {formData.isHabitFixer && (
+                        <div className="animate-fade-in p-4 bg-surface/30 rounded-xl border border-white/5 space-y-4">
+                            <h3 className="text-sm font-bold text-text-primary">Verification Window</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-xs font-bold text-text-muted uppercase tracking-wider mb-1 block">Start Time</label>
+                                    <input
+                                        type="time"
+                                        className="w-full bg-background border border-border/50 rounded-lg px-3 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
+                                        value={formData.windowStart}
+                                        onChange={(e) => setFormData({ ...formData, windowStart: e.target.value })}
+                                        required={formData.isHabitFixer}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-text-muted uppercase tracking-wider mb-1 block">End Time</label>
+                                    <input
+                                        type="time"
+                                        className="w-full bg-background border border-border/50 rounded-lg px-3 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
+                                        value={formData.windowEnd}
+                                        onChange={(e) => setFormData({ ...formData, windowEnd: e.target.value })}
+                                        required={formData.isHabitFixer}
+                                    />
+                                </div>
+                            </div>
+                            <p className="text-xs text-text-secondary">
+                                During this time, you must verify your habit with a photo. The window must be at least 30 minutes long.
+                            </p>
+                        </div>
+                    )}
 
                     <div className="flex justify-end gap-3 mt-6">
                         <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>

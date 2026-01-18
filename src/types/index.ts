@@ -19,6 +19,8 @@ export interface Habit {
     // Habit Fixer specific
     isHabitFixer: boolean;
     reminderTime?: string;
+    windowStart?: string; // HH:mm (24h format)
+    windowEnd?: string; // HH:mm (24h format)
 }
 
 export interface HabitLog {
