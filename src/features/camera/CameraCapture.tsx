@@ -112,8 +112,8 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCance
 
     const handleCaptureClick = () => {
         setCapturing(true);
-        // Random delay between 3 and 7 seconds
-        let count = Math.floor(Math.random() * (7 - 3 + 1) + 3);
+        // Random delay between 3 and 5 seconds
+        let count = Math.floor(Math.random() * (5 - 3 + 1) + 3);
         setCountdown(count);
 
         const interval = setInterval(() => {
@@ -182,7 +182,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCance
                     <div className="absolute inset-0 z-30 animate-[flash_0.1s_ease-out]">
                         <img
                             src={previewImage}
-                            className={`w-full h-full object-cover ${isMirrored ? 'transform scale-x-[-1]' : ''}`}
+                            className="w-full h-full object-cover"
                             alt="Captured"
                         />
                     </div>
