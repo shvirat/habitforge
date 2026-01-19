@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
+:root {
+    color-scheme: light dark;
+}
 
 @layer base {
   :root {
