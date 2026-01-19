@@ -23,6 +23,13 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
+  React.useEffect(() => {
+    // Clear the badge when the app is opened
+    if ('setAppBadge' in navigator) {
+      navigator.clearAppBadge().catch(e => console.error('Failed to clear badge:', e));
+    }
+  }, []);
+
   return (
     <Router>
       <AuthProvider>

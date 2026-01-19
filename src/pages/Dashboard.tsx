@@ -191,7 +191,7 @@ export const Dashboard = () => {
                                         const isSunday = today.getDay() === 0;
                                         if (!isSunday) {
                                             return (
-                                                <div className={`w-full ${actionBase} bg-white/5 text-text-muted font-bold border border-white/5 cursor-not-allowed`}>
+                                                <div className={`w-full ${actionBase} bg-white/5 text-text-muted font-bold border border-gray-400/20 cursor-not-allowed`}>
                                                     <Calendar size={16} />
                                                     Available Sunday
                                                 </div>
@@ -228,7 +228,7 @@ export const Dashboard = () => {
                                         <>
                                             <button
                                                 className={`h-10 w-10 flex items-center justify-center rounded-lg
-                                                            text-text-muted border border-white/5
+                                                            text-text-muted border border-gray-400/20 bg-white/5
                                                             hover:text-error hover:bg-error/10 hover:border-error/20
                                                             transition-all active:scale-95`}
                                                 onClick={() => setConfirmAction({
