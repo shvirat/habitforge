@@ -1,3 +1,9 @@
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js');
+
+if (workbox) {
+  workbox.precaching.precacheAndRoute(self.__WB_MANIFEST || []);
+}
+
 importScripts('https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.14.0/firebase-messaging-compat.js');
 

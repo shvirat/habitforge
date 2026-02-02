@@ -42,14 +42,13 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
 
                 const currentToken = await getToken(messaging, tokenOptions);
                 if (currentToken) {
-                    console.log('FCM Token:', currentToken);
                     toast.success("Notifications enabled!");
 
                     if (user) {
                         await saveTokenToFirestore(user.uid, currentToken);
                     }
                 } else {
-                    console.log('No registration token available.');
+                    // console.log('No registration token available.');
                 }
             }
         } catch (err) {
@@ -65,7 +64,7 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
                 updatedAt: new Date(),
                 platform: 'web'
             });
-            console.log("Token saved to Firestore");
+            // console.log("Token saved to Firestore");
         } catch (dbError) {
             console.error("Error saving token to DB:", dbError);
         }
@@ -105,7 +104,6 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
     useEffect(() => {
         if (messaging) {
             const unsubscribe = onMessage(messaging, (payload) => {
-                console.log('Foreground Message received: ', payload);
                 toast.info(
                     <div>
                         <h4 className='font-bold'>{payload.notification?.title || "Notification"}</h4>

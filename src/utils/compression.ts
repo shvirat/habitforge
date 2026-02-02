@@ -45,7 +45,6 @@ export const compressImage = async (file: Blob | File): Promise<Blob> => {
             canvas.toBlob(
                 (blob) => {
                     if (blob) {
-                        console.log(`Image compressed: ${file.size} -> ${blob.size} bytes`);
                         resolve(blob);
                     } else {
                         reject(new Error('Compression failed'));

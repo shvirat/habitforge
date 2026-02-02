@@ -6,7 +6,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { LevelBadge } from '@/components/LevelBadge';
 import { User, Save, X, Edit2, Shield, Trash2, ShieldCheckIcon, Bell, LogOut } from 'lucide-react';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 
@@ -54,8 +54,6 @@ export const Profile = () => {
         if (!user) return;
         try {
             const { updateProfile } = await import('firebase/auth');
-            const { doc, updateDoc } = await import('firebase/firestore');
-            const { db } = await import('@/lib/firebase');
 
             // Update Auth Profile
             await updateProfile(user, {

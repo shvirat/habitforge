@@ -88,11 +88,11 @@ export const ProofGallery = ({ habitId, isOpen, onClose }: ProofGalleryProps) =>
                                 <div
                                     key={log.id}
                                     className="group relative aspect-square rounded-xl overflow-hidden border border-white/10 bg-surface/30 cursor-zoom-in transition-all duration-300 hover:border-accent/50 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]"
-                                    onClick={() => setSelectedImage(log.proofBase64)}
+                                    onClick={() => setSelectedImage(log.proofUrl || log.proofBase64)}
                                 >
-                                    {log.proofBase64 ? (
+                                    {log.proofUrl || log.proofBase64 ? (
                                         <img
-                                            src={log.proofBase64}
+                                            src={log.proofUrl || log.proofBase64}
                                             alt="Proof"
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                         />

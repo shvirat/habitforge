@@ -10,9 +10,11 @@ import {
     increment,
     Timestamp,
     orderBy,
-    deleteDoc
+    deleteDoc,
+    runTransaction
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { uploadImageToCloudinary } from '@/utils/cloudinary';
 import type { Habit } from '@/types';
 import { XP_CONSTANTS, calculateLevel } from '@/utils/gamification';
 
@@ -84,14 +86,7 @@ export const HabitService = {
         }
     },
 
-    blobToBase64: (blob: Blob): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        });
-    },
+
 
     // Helper to check for level up
     checkAndApplyLevelUp: async (userId: string) => {
@@ -112,35 +107,53 @@ export const HabitService = {
 
     failHabit: async (userId: string, habitId: string, failureDate: Date = new Date()) => {
         try {
-            // Fetch habit to get title
-            const habitRef = doc(db, HABITS_COLLECTION, habitId);
-            const habitDoc = await getDoc(habitRef);
-            const habitTitle = habitDoc.exists() ? habitDoc.data().title : 'Unknown Protocol';
+            await runTransaction(db, async (transaction) => {
+                const habitRef = doc(db, HABITS_COLLECTION, habitId);
+                const habitDoc = await transaction.get(habitRef);
 
-            // Log failure
-            await addDoc(collection(db, 'logs'), {
-                userId,
-                habitId,
-                habitTitle,
-                date: failureDate.toISOString().split('T')[0],
-                completedAt: Timestamp.fromDate(failureDate),
-                status: 'failed',
-                xpChange: -XP_CONSTANTS.HABIT_FAILURE_PENALTY
+                if (!habitDoc.exists()) throw new Error("Habit not found");
+
+                const data = habitDoc.data();
+
+                // Idempotency Check: Don't fail if already failed today/on failureDate
+                if (data.lastFailed) {
+                    const lastFailedDate = data.lastFailed.toDate();
+                    if (
+                        lastFailedDate.getFullYear() === failureDate.getFullYear() &&
+                        lastFailedDate.getMonth() === failureDate.getMonth() &&
+                        lastFailedDate.getDate() === failureDate.getDate()
+                    ) {
+                        // Already failed for this date, ignore to prevent double XP deduction
+                        return;
+                    }
+                }
+
+                const habitTitle = data.title;
+                const userRef = doc(db, 'users', userId);
+                const logRef = doc(collection(db, 'logs'));
+
+                // Log failure
+                transaction.set(logRef, {
+                    userId,
+                    habitId,
+                    habitTitle,
+                    date: failureDate.toISOString().split('T')[0],
+                    completedAt: Timestamp.fromDate(failureDate),
+                    status: 'failed',
+                    xpChange: -XP_CONSTANTS.HABIT_FAILURE_PENALTY
+                });
+
+                // Reset Streak
+                transaction.update(habitRef, {
+                    streak: 0,
+                    lastFailed: Timestamp.fromDate(failureDate)
+                });
+
+                // Deduct XP
+                transaction.update(userRef, {
+                    xp: increment(-XP_CONSTANTS.HABIT_FAILURE_PENALTY)
+                });
             });
-
-            // Reset Streak (Strict Mode) or just keep it? Let's reset streak for now.
-            await updateDoc(habitRef, {
-                streak: 0,
-                lastFailed: Timestamp.fromDate(failureDate)
-            });
-
-            // Deduct XP
-            const userRef = doc(db, 'users', userId);
-            await updateDoc(userRef, {
-                xp: increment(-XP_CONSTANTS.HABIT_FAILURE_PENALTY)
-            });
-
-            // We don't usually de-level people, so no level check needed for penalty.
         } catch (error) {
             console.error("Error failing habit:", error);
             throw error;
@@ -149,61 +162,55 @@ export const HabitService = {
 
     completeHabitWithProof: async (userId: string, habitId: string, imageBlob: Blob) => {
         try {
-            // Start by checking if already completed today
-            const habitRef = doc(db, HABITS_COLLECTION, habitId);
-            const habitDoc = await getDoc(habitRef);
-
-            if (!habitDoc.exists()) throw new Error("Habit not found");
-
-            const data = habitDoc.data();
-            const today = new Date().toDateString();
-
-            if (data.lastCompleted && data.lastCompleted.toDate().toDateString() === today) {
-                console.warn("Habit already completed today");
-                return;
-            }
-
-            // Compress Image (No-Storage Strategy)
-            // Target: < 100-200KB to fit comfortably in Firestore 1MB limit
+            // 1. Compress Image
             const compressedBlob = await import('@/utils/compression').then(m => m.compressImage(imageBlob));
 
-            // Safety Check: If it's still huge (rare, but possible with massive source files), warn.
-            if (compressedBlob.size > 800 * 1024) {
-                throw new Error("Image is too large even after compression. Please try a different photo.");
-            }
+            // 2. Upload to Cloudinary
+            const downloadURL = await uploadImageToCloudinary(compressedBlob);
 
-            // Convert to Base64
-            const base64Image = await HabitService.blobToBase64(compressedBlob);
+            // 3. Run Transaction for DB consistency
+            await runTransaction(db, async (transaction) => {
+                const habitRef = doc(db, HABITS_COLLECTION, habitId);
+                const habitDoc = await transaction.get(habitRef);
+                const userRef = doc(db, 'users', userId);
 
-            // Create Log
-            await addDoc(collection(db, 'logs'), {
-                userId,
-                habitId,
-                habitTitle: data.title || 'Protocol',
-                date: new Date().toISOString().split('T')[0],
-                completedAt: Timestamp.now(),
-                status: 'completed',
-                proofBase64: base64Image,
-                type: 'habit-fixer',
-                xpEarned: XP_CONSTANTS.HABIT_FIXER_COMPLETION
+                if (!habitDoc.exists()) throw new Error("Habit not found");
+
+                const data = habitDoc.data();
+                const today = new Date().toDateString();
+
+                if (data.lastCompleted && data.lastCompleted.toDate().toDateString() === today) {
+                    throw new Error("Habit already completed today");
+                }
+
+                // Create Log
+                const logRef = doc(collection(db, 'logs'));
+                transaction.set(logRef, {
+                    userId,
+                    habitId,
+                    habitTitle: data.title || 'Protocol',
+                    date: new Date().toISOString().split('T')[0],
+                    completedAt: Timestamp.now(),
+                    status: 'completed',
+                    proofUrl: downloadURL, // Store URL not Base64
+                    type: 'habit-fixer',
+                    xpEarned: XP_CONSTANTS.HABIT_FIXER_COMPLETION
+                });
+
+                // Update Habit
+                transaction.update(habitRef, {
+                    streak: (data.streak || 0) + 1,
+                    totalCompletions: (data.totalCompletions || 0) + 1,
+                    lastCompleted: Timestamp.now()
+                });
+
+                // Award XP
+                transaction.update(userRef, {
+                    xp: increment(XP_CONSTANTS.HABIT_FIXER_COMPLETION)
+                });
             });
 
-            // Update Habit Streak & Stats
-            const currentStreak = data.streak || 0;
-            const currentTotal = data.totalCompletions || 0;
-            await updateDoc(habitRef, {
-                streak: currentStreak + 1,
-                totalCompletions: currentTotal + 1,
-                lastCompleted: Timestamp.now()
-            });
-
-            // Award XP to User
-            const userRef = doc(db, 'users', userId);
-            await updateDoc(userRef, {
-                xp: increment(XP_CONSTANTS.HABIT_FIXER_COMPLETION)
-            });
-
-            // Check for level up
+            // Check for level up (outside transaction)
             await HabitService.checkAndApplyLevelUp(userId);
 
         } catch (error) {
@@ -214,43 +221,43 @@ export const HabitService = {
 
     completeHabit: async (userId: string, habitId: string) => {
         try {
-            const habitRef = doc(db, HABITS_COLLECTION, habitId);
-            const habitDoc = await getDoc(habitRef);
+            await runTransaction(db, async (transaction) => {
+                const habitRef = doc(db, HABITS_COLLECTION, habitId);
+                const habitDoc = await transaction.get(habitRef);
+                const userRef = doc(db, 'users', userId);
 
-            if (!habitDoc.exists()) throw new Error("Habit not found");
+                if (!habitDoc.exists()) throw new Error("Habit not found");
 
-            const data = habitDoc.data();
-            const today = new Date().toDateString();
+                const data = habitDoc.data();
+                const today = new Date().toDateString();
 
-            if (data.lastCompleted && data.lastCompleted.toDate().toDateString() === today) {
-                console.warn("Habit already completed today");
-                return;
-            }
+                if (data.lastCompleted && data.lastCompleted.toDate().toDateString() === today) {
+                    throw new Error("Habit already completed today");
+                }
 
-            // Log completion
-            await addDoc(collection(db, 'logs'), {
-                userId,
-                habitId,
-                habitTitle: data.title || 'Protocol',
-                date: new Date().toISOString().split('T')[0],
-                completedAt: Timestamp.now(),
-                status: 'completed',
-                xpEarned: XP_CONSTANTS.STANDARD_HABIT_COMPLETION
-            });
+                // Log completion
+                const logRef = doc(collection(db, 'logs'));
+                transaction.set(logRef, {
+                    userId,
+                    habitId,
+                    habitTitle: data.title || 'Protocol',
+                    date: new Date().toISOString().split('T')[0],
+                    completedAt: Timestamp.now(),
+                    status: 'completed',
+                    xpEarned: XP_CONSTANTS.STANDARD_HABIT_COMPLETION
+                });
 
-            // Update Habit
-            const currentStreak = data.streak || 0;
-            const currentTotal = data.totalCompletions || 0;
-            await updateDoc(habitRef, {
-                streak: currentStreak + 1,
-                totalCompletions: currentTotal + 1,
-                lastCompleted: Timestamp.now()
-            });
+                // Update Habit
+                transaction.update(habitRef, {
+                    streak: (data.streak || 0) + 1,
+                    totalCompletions: (data.totalCompletions || 0) + 1,
+                    lastCompleted: Timestamp.now()
+                });
 
-            // Award XP
-            const userRef = doc(db, 'users', userId);
-            await updateDoc(userRef, {
-                xp: increment(XP_CONSTANTS.STANDARD_HABIT_COMPLETION)
+                // Award XP
+                transaction.update(userRef, {
+                    xp: increment(XP_CONSTANTS.STANDARD_HABIT_COMPLETION)
+                });
             });
 
             // Check Level Up logic
@@ -280,80 +287,151 @@ export const HabitService = {
                     ...doc.data(),
                     completedAt: doc.data().completedAt?.toDate ? doc.data().completedAt.toDate() : new Date(doc.data().date)
                 }))
-                .sort((a: any, b: any) => b.completedAt.getTime() - a.completedAt.getTime());
+                .sort((a: { completedAt: Date }, b: { completedAt: Date }) => b.completedAt.getTime() - a.completedAt.getTime());
         } catch (error) {
             console.error('Error fetching habit logs:', error);
             throw error;
         }
     },
 
-    // Check for missed habits from yesterday
-    checkMissedHabits: async (userId: string) => {
+
+
+    // Check for missed daily habits
+    checkMissedDailyHabits: async (userId: string) => {
         try {
             const habits = await HabitService.getUserHabits(userId);
+
             const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
             const yesterday = new Date(today);
             yesterday.setDate(yesterday.getDate() - 1);
 
-            const missedHabits = habits.filter(habit => {
-                // Ignore weekly habits from the daily 'missed' check (needs separate weekly check logic eventually)
-                if (habit.frequency === 'weekly') return false;
+            return habits.filter(habit => {
+                if (habit.frequency !== 'daily') return false;
 
-                // Ignore if created today or yesterday
-                if (habit.createdAt.toDateString() === today.toDateString() ||
-                    habit.createdAt.toDateString() === yesterday.toDateString()) {
+                const createdAt = new Date(habit.createdAt);
+                const lastCompleted = habit.lastCompleted ? new Date(habit.lastCompleted) : null;
+                const lastFailed = habit.lastFailed ? new Date(habit.lastFailed) : null;
+
+                // Ignore newly created habits
+                if (
+                    createdAt.toDateString() === today.toDateString() ||
+                    createdAt.toDateString() === yesterday.toDateString()
+                ) {
                     return false;
                 }
 
-                // Check if completed today or yesterday
-                const lastCompleted = habit.lastCompleted;
-                const lastFailed = habit.lastFailed;
-
-                // If already marked as failed yesterday/today, it's not "missed" in the sense of needing processing
+                // Ignore if already failed today or yesterday
                 if (lastFailed) {
-                    if (lastFailed.toDateString() === today.toDateString() ||
-                        lastFailed.toDateString() === yesterday.toDateString()) {
+                    if (
+                        lastFailed.toDateString() === today.toDateString() ||
+                        lastFailed.toDateString() === yesterday.toDateString()
+                    ) {
                         return false;
                     }
                 }
 
-                // If never completed, but old enough -> missed
+                // Never completed → missed
                 if (!lastCompleted) return true;
 
-                const isCompletedToday = lastCompleted.toDateString() === today.toDateString();
-                const isCompletedYesterday = lastCompleted.toDateString() === yesterday.toDateString();
+                const completedToday = lastCompleted.toDateString() === today.toDateString();
+                const completedYesterday = lastCompleted.toDateString() === yesterday.toDateString();
 
-                return !isCompletedToday && !isCompletedYesterday;
+                return !completedToday && !completedYesterday;
             });
-
-            return missedHabits;
         } catch (error) {
-            console.error("Error checking missed habits:", error);
+            console.error("Error checking missed daily habits:", error);
             return [];
         }
     },
 
-    // Process missed habits (Apply penalty, reset streak)
+    // Check for missed weekly habits
+    checkMissedWeeklyHabits: async (userId: string) => {
+        try {
+            const habits = await HabitService.getUserHabits(userId);
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const sevenDaysAgo = new Date(today);
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+            return habits.filter(habit => {
+                if (habit.frequency !== 'weekly') return false;
+
+                const createdAt = new Date(habit.createdAt);
+                const lastCompleted = habit.lastCompleted ? new Date(habit.lastCompleted) : null;
+                const lastFailed = habit.lastFailed ? new Date(habit.lastFailed) : null;
+
+                // Ignore habits created within last 7 days
+                if (createdAt >= sevenDaysAgo) {
+                    return false;
+                }
+
+                // Ignore if already failed in last 7 days
+                if (lastFailed && lastFailed >= sevenDaysAgo) {
+                    return false;
+                }
+
+                // Never completed → missed
+                if (!lastCompleted) return true;
+
+                return lastCompleted < sevenDaysAgo;
+            });
+        } catch (error) {
+            console.error("Error checking missed weekly habits:", error);
+            return [];
+        }
+    },
+
+
     processMissedHabits: async (userId: string) => {
-        const missed = await HabitService.checkMissedHabits(userId);
+        const missedDaily = await HabitService.checkMissedDailyHabits(userId);
+        const missedWeekly = await HabitService.checkMissedWeeklyHabits(userId);
+
+        // Deduplicate just in case
+        const missedMap = new Map<string, Habit>();
+
+        [...missedDaily, ...missedWeekly].forEach(habit => {
+            missedMap.set(habit.id, habit);
+        });
+
+        const missed = Array.from(missedMap.values());
         if (missed.length === 0) return [];
 
-        // Calculate yesterday for retroactive failure
-        const yesterday = new Date();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
 
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
         const processed = [];
+
         for (const habit of missed) {
             try {
-                // Apply failure logic retroactively for yesterday
-                await HabitService.failHabit(userId, habit.id, yesterday);
+                const failDate =
+                    habit.frequency === 'daily'
+                        ? yesterday
+                        : sevenDaysAgo;
+
+                await HabitService.failHabit(userId, habit.id, failDate);
                 processed.push(habit);
             } catch (error) {
-                console.error(`Failed to process missed occurred for habit ${habit.id}`, error);
+                console.error(
+                    `Failed to process missed habit ${habit.id}`,
+                    error
+                );
             }
         }
+
         return processed;
     },
+
+
 
     // Get all logs for a user (for level history)
     getUserGlobalLogs: async (userId: string) => {
@@ -385,7 +463,7 @@ export const HabitService = {
                         ...doc.data(),
                         completedAt: doc.data().completedAt?.toDate ? doc.data().completedAt.toDate() : new Date(doc.data().date)
                     }))
-                    .sort((a: any, b: any) => b.completedAt.getTime() - a.completedAt.getTime());
+                    .sort((a: { completedAt: Date }, b: { completedAt: Date }) => b.completedAt.getTime() - a.completedAt.getTime());
             }
             console.error('Error fetching global logs:', error);
             throw error;

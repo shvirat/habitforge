@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Trophy, Calendar, CheckCircle2, Flame, Edit2, Save } from 'lucide-react';
+import { X, Trophy, Calendar, CheckCircle2, Flame, Edit2, Save, Camera } from 'lucide-react';
 import { HabitService } from '@/features/habits/HabitService';
 import { useAuth } from '@/context/AuthContext';
 import type { Habit } from '@/types';
@@ -178,9 +178,22 @@ export const HabitDetailsModal: React.FC<HabitDetailsModalProps> = ({ habit, isO
                                                 <span className="text-xs text-text-muted">{format(log.completedAt, 'PPP p')}</span>
                                             </div>
                                         </div>
-                                        <span className="text-xs font-bold text-success bg-success/10 px-2 py-1 rounded border border-success/20">
-                                            +{log.xpEarned} XP
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-bold text-success bg-success/10 px-2 py-1 rounded border border-success/20">
+                                                +{log.xpEarned} XP
+                                            </span>
+                                            {(log.proofUrl || log.proofBase64) && (
+                                                <a
+                                                    href={log.proofUrl || log.proofBase64}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="p-1.5 text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg transition-colors border border-blue-500/20"
+                                                    title="View Proof"
+                                                >
+                                                    <Camera size={14} />
+                                                </a>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>

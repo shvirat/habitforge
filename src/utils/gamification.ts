@@ -1,7 +1,7 @@
 export const XP_CONSTANTS = {
     HABIT_FIXER_COMPLETION: 50,
     STANDARD_HABIT_COMPLETION: 10,
-    HABIT_FAILURE_PENALTY: 5, // Deducted when marking as failed/skipped
+    HABIT_FAILURE_PENALTY: 50, // Deducted when marking as failed/skipped
     LEVEL_BASE_XP: 100, // XP needed for Level 2
 };
 
