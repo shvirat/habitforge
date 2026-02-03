@@ -47,7 +47,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <div className="flex items-center gap-2 mb-10 px-2">
                     <div className="relative group">
                         <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full group-hover:bg-primary/40 transition-all duration-500" />
-                        <img src="src/assets/badge.png" alt="App logo" className='w-9'/>
+                        <img src="/icons/badge.png" alt="App logo" className='w-9'/>
                     </div>
                     <span className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-text-primary to-text-primary/70 tracking-tight">Habit Forge</span>
                 </div>
