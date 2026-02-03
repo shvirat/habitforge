@@ -121,7 +121,7 @@ export const HabitFixerPage = () => {
                         <ShieldCheck className="text-accent" size={32} />
                     </div>
                     <div>
-                        <h1 className="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Verification Protocol</h1>
+                        <h1 className="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Verification Protocol</h1>
                         <p className="text-text-secondary font-medium">Verify your discipline with photographic evidence.</p>
                     </div>
                 </div>
@@ -177,10 +177,10 @@ export const HabitFixerPage = () => {
                             <h3 className="text-2xl font-black text-text-primary mb-2 tracking-tight">Protocol Verified</h3>
                             <p className="text-text-secondary mb-8 max-w-xs mx-auto">You have successfully proved your discipline for today. The forge grows stronger.</p>
                             <div className="flex flex-col md:flex-row gap-4">
-                                <Button className="min-w-[160px]" variant="outline" onClick={() => navigate('/dashboard')}>
+                                <Button className="min-w-40" variant="outline" onClick={() => navigate('/dashboard')}>
                                     Back to Dashboard
                                 </Button>
-                                <Button className="min-w-[160px]" variant="secondary" onClick={() => setShowHistory(true)}>
+                                <Button className="min-w-40" variant="secondary" onClick={() => setShowHistory(true)}>
                                     View History
                                 </Button>
                             </div>

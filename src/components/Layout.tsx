@@ -38,22 +38,18 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="h-screen bg-background text-text-primary flex relative overflow-hidden">
             {/* Background Effects */}
             <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] opacity-20" />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[100px] opacity-20" />
+                <div className="absolute top-0 right-0 w-125 h-125 bg-primary/5 rounded-full blur-[100px] opacity-20" />
+                <div className="absolute bottom-0 left-0 w-125 h-125 bg-accent/5 rounded-full blur-[100px] opacity-20" />
             </div>
 
             {/* Sidebar - Desktop */}
             <aside className="hidden min-[900px]:flex w-72 flex-col border-r border-white/5 bg-surface/30 backdrop-blur-xl p-6 z-20 shadow-2xl shrink-0">
-                <div className="flex items-center gap-4 mb-10 px-2">
+                <div className="flex items-center gap-2 mb-10 px-2">
                     <div className="relative group">
                         <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full group-hover:bg-primary/40 transition-all duration-500" />
-                        <svg className="w-10 h-10 relative z-10 drop-shadow-[0_0_10px_rgba(0,230,118,0.5)]" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="8" y="8" width="112" height="112" rx="28" className="fill-surface-light dark:fill-[#0F172A]" />
-                            <path d="M64 28 L92 40 V64 C92 82 76 94 64 100 C52 94 36 82 36 64 V40 L64 28Z" fill="#00E676" />
-                            <path d="M52 64 L60 72 L78 52" className="stroke-surface-light stroke-[#0F172A]" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                        </svg>
+                        <img src="src/assets/badge.png" alt="App logo" className='w-9'/>
                     </div>
-                    <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-text-primary to-text-primary/70 tracking-tight">HabitForge</span>
+                    <span className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-text-primary to-text-primary/70 tracking-tight">HabitForge</span>
                 </div>
 
                 <div className="mb-8 px-2">

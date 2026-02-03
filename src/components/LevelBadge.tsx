@@ -36,7 +36,7 @@ export const LevelBadge: React.FC<LevelBadgeProps> = ({ xp }) => {
 
                 <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-500 relative"
+                        className="h-full bg-linear-to-r from-primary to-accent transition-all duration-500 relative"
                         style={{ width: `${progressPercent}%` }}
                     >
                         <div className="absolute inset-0 bg-white/20 animate-[shimmer_2s_infinite]" />

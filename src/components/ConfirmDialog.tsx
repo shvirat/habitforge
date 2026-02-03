@@ -27,7 +27,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     if (!isOpen) return null;
 
     return createPortal(
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
             <div className="w-full max-w-md bg-surface border border-secondary rounded-2xl p-6 shadow-2xl animate-scale-up relative overflow-hidden">
                 {/* Background Glow */}
                 <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-[50px] pointer-events-none opacity-20 ${isDestructive ? 'bg-error' : 'bg-primary'}`} />

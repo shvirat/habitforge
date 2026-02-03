@@ -70,7 +70,7 @@ export const Dashboard = () => {
         <div className="space-y-8">
             <header className="flex flex-col md:flex-row gap-6 md:items-end justify-between relative z-10">
                 <div>
-                    <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Dashboard</h1>
+                    <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Dashboard</h1>
                     <p className="text-text-secondary font-medium flex items-center gap-2">
                         <Zap size={16} className="text-accent" />
                         Forging your discipline, one day at a time.
@@ -86,7 +86,7 @@ export const Dashboard = () => {
                             <span className="text-[10px] text-text-muted uppercase tracking-widest font-bold">Experience</span>
                         </div>
                     </Link>
-                    <Button onClick={() => setIsModalOpen(true)} className="hidden md:flex shadow-lg shadow-primary/20 px-2 py-[25px] rounded-x w-[150px]">
+                    <Button onClick={() => setIsModalOpen(true)} className="hidden md:flex shadow-lg shadow-primary/20 px-2 py-6.25 rounded-x w-37.5">
                         <Plus size={20} className="mr-2" />
                         New Habit
                     </Button>
@@ -101,7 +101,7 @@ export const Dashboard = () => {
                 </div>
             ) : habits.length === 0 ? (
                 <div className="text-center py-24 bg-surface/30 backdrop-blur-sm rounded-3xl border border-white/5 border-dashed relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-linear-to-b from-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <p className="text-xl text-text-secondary mb-6 font-light relative z-10">Your forge is cold. Reignite it.</p>
                     <Button onClick={() => setIsModalOpen(true)} size="lg" className="relative z-10">
                         <Plus size={20} className="mr-2" />
@@ -163,7 +163,7 @@ export const Dashboard = () => {
                                 </div>
                             </div>
 
-                            <p className="text-text-secondary text-sm line-clamp-2 mb-8 min-h-[2.5rem] relative z-10 leading-relaxed">
+                            <p className="text-text-secondary text-sm line-clamp-2 mb-8 min-h-10 relative z-10 leading-relaxed">
                                 {habit.purpose}
                             </p>
 

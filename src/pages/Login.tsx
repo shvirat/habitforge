@@ -87,7 +87,7 @@ export const Login = () => {
 
             <div className="relative z-10 w-full max-w-md glass-panel p-8 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-scale-up border border-white/10">
                 <div className="text-center mb-10">
-                    <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-text-primary via-primary to-text-primary bg-clip-text text-transparent mb-3 tracking-tight drop-shadow-sm">
+                    <h1 className="text-3xl md:text-4xl font-black bg-linear-to-r from-text-primary via-primary to-text-primary bg-clip-text text-transparent mb-3 tracking-tight drop-shadow-sm">
                         HabitForge
                     </h1>
                     <p className="text-text-secondary font-medium">
@@ -123,9 +123,9 @@ export const Login = () => {
                 </form>
 
                 <div className="my-8 flex items-center gap-4 text-text-muted text-xs font-bold uppercase tracking-widest">
-                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                    <div className="h-px flex-1 bg-linear-to-r from-transparent via-white/10 to-transparent" />
                     OR
-                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                    <div className="h-px flex-1 bg-linear-to-r from-transparent via-white/10 to-transparent" />
                 </div>
 
                 <Button

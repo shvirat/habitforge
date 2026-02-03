@@ -57,10 +57,10 @@ export const LevelDetails = () => {
         <div className="space-y-8 max-w-4xl mx-auto pb-20">
             {/* ... (Header and Progress Card remain same) ... */}
             <header className="text-center space-y-4">
-                <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 shadow-xl shadow-orange-500/20 mb-4 animate-bounce-slow">
+                <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-linear-to-br from-yellow-400 to-orange-500 shadow-xl shadow-orange-500/20 mb-4 animate-bounce-slow">
                     <Trophy className="text-white w-12 h-12" />
                 </div>
-                <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-600">
+                <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-yellow-400 to-orange-600">
                     Level {stats.level}
                 </h1>
                 <p className="text-text-secondary text-base md:text-lg">{getRankTitle(stats.level)}</p>
@@ -82,7 +82,7 @@ export const LevelDetails = () => {
 
                 <div className="h-4 bg-secondary/30 rounded-full overflow-hidden relative z-10">
                     <div
-                        className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(var(--primary),0.5)]"
+                        className="h-full bg-linear-to-r from-primary to-accent transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(var(--primary),0.5)]"
                         style={{ width: `${progressPercent}%` }}
                     />
                 </div>
@@ -156,7 +156,7 @@ export const LevelDetails = () => {
                 </button>
 
                 {showHistory && (
-                    <div className="border-t border-secondary max-h-[400px] overflow-y-auto p-4 space-y-2">
+                    <div className="border-t border-secondary max-h-100 overflow-y-auto p-4 space-y-2">
                         {loadingLogs ? (
                             <div className="text-center py-8 text-text-muted">Loading history...</div>
                         ) : logs.length === 0 ? (

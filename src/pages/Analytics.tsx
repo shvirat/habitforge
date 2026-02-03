@@ -92,7 +92,7 @@ export const Analytics = () => {
         <div className="space-y-8 pb-20 max-w-6xl mx-auto">
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Performance Analytics</h1>
+                    <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Performance Analytics</h1>
                     <p className="text-text-secondary flex items-center gap-2">
                         <BarChart2 size={16} className="text-accent" />
                         Visualize your discipline metrics.
@@ -104,7 +104,7 @@ export const Analytics = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 min-[1080px]:grid-cols-3 gap-6">
                 <div className="glass-card p-6 rounded-2xl relative overflow-hidden group">
                     {/* Background Glow */}
-                    <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-primary/20 rounded-full blur-[40px] group-hover:bg-primary/30 transition-all" />
+                    <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-all" />
 
                     <div className="flex items-center gap-4 mb-2 relative z-10">
                         <div className="p-3 bg-primary/10 rounded-xl text-primary border border-primary/20"><Activity size={20} /></div>

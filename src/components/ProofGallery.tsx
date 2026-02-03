@@ -101,7 +101,7 @@ export const ProofGallery = ({ habitId, isOpen, onClose }: ProofGalleryProps) =>
                                     )}
 
                                     {/* Overlay Info */}
-                                    <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-2 text-xs font-medium text-white/90">
+                                    <div className="absolute inset-x-0 bottom-0 p-3 bg-linear-to-t from-black/80 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-2 text-xs font-medium text-white/90">
                                         <Calendar size={12} className="text-accent" />
                                         {format(log.completedAt, 'MMM d, yyyy')}
                                     </div>
@@ -125,7 +125,7 @@ export const ProofGallery = ({ habitId, isOpen, onClose }: ProofGalleryProps) =>
             {/* Lightbox / Full Screen View */}
             {selectedImage && (
                 <div
-                    className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 backdrop-blur-xl animate-fade-in"
+                    className="fixed inset-0 z-60 flex items-center justify-center bg-black/95 backdrop-blur-xl animate-fade-in"
                     onClick={() => setSelectedImage(null)}
                 >
                     <div className="relative max-w-[95vw] max-h-[95vh] p-2">

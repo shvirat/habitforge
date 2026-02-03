@@ -79,7 +79,7 @@ export const Profile = () => {
         <div className="space-y-8 pb-20 max-w-4xl mx-auto">
             <header className="flex justify-between items-end border-b border-white/10 pb-6">
                 <div>
-                    <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Operative Profile</h1>
+                    <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-text-primary to-text-primary/60 tracking-tight mb-2">Operative Profile</h1>
                     <p className="text-text-secondary flex items-center gap-2">
                         <Shield size={16} className="text-primary" />
                         Manage your identity and protocols.
@@ -102,7 +102,7 @@ export const Profile = () => {
                                     onError={() => setImageError(true)}
                                 />
                             ) : (
-                                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-5xl font-black text-white shadow-2xl border-4 border-surface">
+                                <div className="w-32 h-32 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center text-5xl font-black text-white shadow-2xl border-4 border-surface">
                                     {user?.email?.charAt(0).toUpperCase()}
                                 </div>
                             )}

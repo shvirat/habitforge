@@ -34,10 +34,10 @@ export const HabitFixerLanding = () => {
     return (
         <div className="space-y-8 relative">
             {/* Background Glow */}
-            <div className="fixed top-20 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="fixed top-20 right-0 w-125 h-125 bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
 
             <header className="relative z-10">
-                <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-accent to-red-500 mb-2 tracking-tight drop-shadow-sm">Habit Fixer</h1>
+                <h1 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-accent to-red-500 mb-2 tracking-tight drop-shadow-sm">Habit Fixer</h1>
                 <p className="text-text-secondary text-base md:text-lg">Prove your discipline with photographic evidence.</p>
             </header>
 
@@ -48,7 +48,7 @@ export const HabitFixerLanding = () => {
                 </div>
             ) : habits.length === 0 ? (
                 <div className="text-center py-12 md:py-24 glass-panel rounded-3xl border-dashed relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-linear-to-b from-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="flex justify-center mb-6 relative z-10">
                         <div className="p-4 bg-surface/50 rounded-full border border-white/5 shadow-inner">
                             <Camera size={48} className="text-text-muted/50" />
@@ -72,7 +72,7 @@ export const HabitFixerLanding = () => {
                             }}
                         >
                             {/* Hover Effect */}
-                            <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-accent/20 rounded-full blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-accent/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                             <h3 className="font-bold text-xl text-text-primary mb-2 relative z-10 group-hover:text-accent transition-colors">{habit.title}</h3>
                             <p className="text-text-secondary text-sm mb-8 relative z-10 line-clamp-3">{habit.purpose}</p>

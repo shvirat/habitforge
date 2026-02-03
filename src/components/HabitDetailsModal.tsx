@@ -20,6 +20,8 @@ export const HabitDetailsModal: React.FC<HabitDetailsModalProps> = ({ habit, isO
     const [isEditing, setIsEditing] = useState(false);
     const [editForm, setEditForm] = useState({ title: '', purpose: '' });
 
+    const md_scr = window.matchMedia('(min-width: 768px)').matches;
+
     const handleSave = async () => {
         if (!habit || !user) return;
         try {
@@ -121,7 +123,7 @@ export const HabitDetailsModal: React.FC<HabitDetailsModalProps> = ({ habit, isO
                                 </div>
                                 <p className="text-text-secondary italic">"{habit.purpose}"</p>
                             </div>
-                            <div className="text-center bg-orange-500/10 p-4 rounded-2xl border border-orange-500/20 min-w-[100px]">
+                            <div className="text-center bg-orange-500/10 p-4 rounded-2xl border border-orange-500/20 min-w-25">
                                 <Flame size={24} className="text-orange-500 mx-auto mb-1 animate-pulse" />
                                 <span className="block text-xl md:text-2xl font-black text-orange-500 leading-none">{habit.streak}</span>
                                 <span className="text-[10px] text-orange-400/80 uppercase font-bold tracking-wider">Streak</span>
@@ -175,7 +177,7 @@ export const HabitDetailsModal: React.FC<HabitDetailsModalProps> = ({ habit, isO
                                             </div>
                                             <div>
                                                 <span className="block text-sm font-medium text-text-primary">Protocol Completed</span>
-                                                <span className="text-xs text-text-muted">{format(log.completedAt, 'PPP p')}</span>
+                                                <span className="text-xs text-text-muted">{format(log.completedAt, md_scr? 'PPPP p': 'PP p')}</span>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -187,10 +189,10 @@ export const HabitDetailsModal: React.FC<HabitDetailsModalProps> = ({ habit, isO
                                                     href={log.proofUrl || log.proofBase64}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="p-1.5 text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg transition-colors border border-blue-500/20"
+                                                    className="px-1 py-1 text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 rounded transition-colors border border-blue-500/20"
                                                     title="View Proof"
                                                 >
-                                                    <Camera size={14} />
+                                                    <Camera size={16} />
                                                 </a>
                                             )}
                                         </div>

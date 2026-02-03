@@ -2,9 +2,9 @@
 
 export const SkeletonCard = () => {
     return (
-        <div className="glass-card rounded-2xl p-6 relative overflow-hidden flex flex-col h-[280px]">
+        <div className="glass-card rounded-2xl p-6 relative overflow-hidden flex flex-col h-70">
             {/* Shimmer Effect */}
-            <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent z-20" />
+            <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-linear-to-r from-transparent via-white/5 to-transparent z-20" />
 
             <div className="flex justify-between items-start mb-6 w-full">
                 <div className="space-y-2 w-full">
