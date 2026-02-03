@@ -21,7 +21,7 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log('[sw.js] Received background message ', payload);
   if (!payload.notification) {
-    const notificationTitle = payload.data?.title || 'HabitForge Notification';
+    const notificationTitle = payload.data?.title || 'Habit Forge Notification';
     const count = payload.data?.badgeCount ? parseInt(payload.data.badgeCount, 10) : 0;
 
     const notificationOptions = {

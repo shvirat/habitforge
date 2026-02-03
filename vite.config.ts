@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg', 'icons/*.png'],
       manifest: {
-        name: 'HabitForge - Forging your discipline',
-        short_name: 'HabitForge',
+        name: 'Habit Forge - Forging your discipline',
+        short_name: 'Habit Forge',
         description: 'Build discipline with proof-based habits, streaks, and accountability.',
         theme_color: '#00E676',
         background_color: '#0F172A',
