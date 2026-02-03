@@ -346,7 +346,7 @@ export const HabitService = {
         }
     },
 
-    // Check for missed weekly habits
+    // Check for missed weekly habits (Calendar Week: Mon-Sun)
     checkMissedWeeklyHabits: async (userId: string) => {
         try {
             const habits = await HabitService.getUserHabits(userId);
@@ -354,30 +354,59 @@ export const HabitService = {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
-            const sevenDaysAgo = new Date(today);
-            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+            // Calculate the end of the last full week (last Sunday)
+            const lastSunday = new Date(today);
+            const dayOfWeek = lastSunday.getDay(); // 0 is Sunday
+            // If today is Sunday (0), we want the PREVIOUS Sunday (-7). 
+            // If today is Monday (1), we want yesterday (-1).
+            // Formula: diff = dayOfWeek === 0 ? 7 : dayOfWeek;
+            const diff = dayOfWeek === 0 ? 7 : dayOfWeek;
+            lastSunday.setDate(lastSunday.getDate() - diff);
+            lastSunday.setHours(0, 0, 0, 0);
+
+            // Calculate start of that week (Monday)
+            const lastMonday = new Date(lastSunday);
+            lastMonday.setDate(lastMonday.getDate() - 6);
+            lastMonday.setHours(0, 0, 0, 0);
 
             return habits.filter(habit => {
                 if (habit.frequency !== 'weekly') return false;
 
                 const createdAt = new Date(habit.createdAt);
+
+                // If created AFTER the start of the week in question, don't penalize yet
+                // (Give them their first incomplete week as a grace period if created mid-week?
+                // Or strictly checking? Usually better to be lenient on creation week)
+                if (createdAt > lastMonday) {
+                    return false;
+                }
+
                 const lastCompleted = habit.lastCompleted ? new Date(habit.lastCompleted) : null;
                 const lastFailed = habit.lastFailed ? new Date(habit.lastFailed) : null;
 
-                // Ignore habits created within last 7 days
-                if (createdAt >= sevenDaysAgo) {
-                    return false;
+                // 1. Check if already failed for this specific week (anchored to lastSunday)
+                if (lastFailed) {
+                    const failDate = new Date(lastFailed);
+                    failDate.setHours(0, 0, 0, 0);
+                    if (failDate.getTime() === lastSunday.getTime()) {
+                        return false; // Already processed failure for this week
+                    }
                 }
 
-                // Ignore if already failed in last 7 days
-                if (lastFailed && lastFailed >= sevenDaysAgo) {
-                    return false;
+                // 2. Check if completed within the window [lastMonday, lastSunday]
+                if (lastCompleted) {
+                    const completeDate = new Date(lastCompleted);
+                    completeDate.setHours(0, 0, 0, 0);
+                    if (completeDate >= lastMonday && completeDate <= lastSunday) {
+                        return false; // Completed this week
+                    }
                 }
 
-                // Never completed → missed
-                if (!lastCompleted) return true;
+                // 3. Last check: if lastCompleted was AFTER the window (e.g. today/yesterday in current week)
+                // We shouldn't retroactively count that for LAST week, so finding it misses the window is correct.
+                // But if they have NEVER completed it (lastCompleted null) -> Missed.
 
-                return lastCompleted < sevenDaysAgo;
+                return true;
             });
         } catch (error) {
             console.error("Error checking missed weekly habits:", error);
@@ -406,17 +435,24 @@ export const HabitService = {
         const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
 
-        const sevenDaysAgo = new Date(today);
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        // Re-calculate lastSunday for the payload
+        const lastSunday = new Date(today);
+        const dayOfWeek = lastSunday.getDay(); // 0 is Sunday
+        const diff = dayOfWeek === 0 ? 7 : dayOfWeek;
+        lastSunday.setDate(lastSunday.getDate() - diff);
+        lastSunday.setHours(0, 0, 0, 0);
 
         const processed = [];
 
         for (const habit of missed) {
             try {
+                // Determine the correct failure date anchor
+                // Daily -> Yesterday
+                // Weekly -> The Sunday of the missed week
                 const failDate =
                     habit.frequency === 'daily'
                         ? yesterday
-                        : sevenDaysAgo;
+                        : lastSunday;
 
                 await HabitService.failHabit(userId, habit.id, failDate);
                 processed.push(habit);
