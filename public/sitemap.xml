@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://habitforge.sharmavirat.in/</loc>
+    <priority>1.0</priority>
+    <lastmod>2026-02-05</lastmod>
+  </url>
+
+  <url>
+    <loc>https://habitforge.sharmavirat.in/dashboard/</loc>
+    <priority>0.5</priority>
+    <lastmod>2026-02-05</lastmod>
+  </url>
+
+  <url>
+    <loc>https://habitforge.sharmavirat.in/fixer/</loc>
+    <priority>0.5</priority>
+    <lastmod>2026-02-05</lastmod>
+  </url>
+
+  <url>
+    <loc>https://habitforge.sharmavirat.in/login</loc>
+    <priority>0.5</priority>
+    <lastmod>2026-02-05</lastmod>
+  </url>
+
+  <url>
+    <loc>https://habitforge.sharmavirat.in/analytics</loc>
+    <priority>0.3</priority>
+    <lastmod>2026-02-05</lastmod>
+  </url>
+  <url>
+    <loc>https://habitforge.sharmavirat.in/profile</loc>
+    <priority>0.3</priority>
+    <lastmod>2026-02-05</lastmod>
+  </url>
+</urlset>
